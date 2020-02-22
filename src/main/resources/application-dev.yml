@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/tape?characterEncoding=UTF-8&serverTimezone=GMT%2B8
+    username: root
+    password: msm84516th
+
+upload:
+  path: "E://tape//"
+

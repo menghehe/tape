@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="site.imcu.tape.mapper.AuthorityMapper">
+
+	<select id="selectAuthorityByUserId" resultType="site.imcu.tape.pojo.Authority">
+		select t2.authority from user_authority t1
+		inner join authority t2 on t1.authority = t2.id
+		where t1.user = #{userId}
+	</select>
+	<insert id="insertUserAuthority">
+		insert into user_authority (user, authority) VALUES (#{userId},#{authorityId})
+	</insert>
+</mapper>
