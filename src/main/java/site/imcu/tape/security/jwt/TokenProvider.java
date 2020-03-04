@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import site.imcu.tape.service.impl.UserServiceImpl;
@@ -94,14 +95,16 @@ public class TokenProvider implements InitializingBean {
       return new UsernamePasswordAuthenticationToken(principal, token, authorities);
    }
 
-   public Integer getUserId(HttpServletRequest request){
-      String token = request.getHeader(AUTHORIZATION_HEADER);
+   public Integer getCurrentUserId(){
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      Object credentials = authentication.getCredentials();
       Claims claims = Jwts.parser()
               .setSigningKey(key)
-              .parseClaimsJws(token)
+              .parseClaimsJws(credentials.toString())
               .getBody();
       return claims.get("userId", Integer.class);
    }
+
 
    public String getUsername(HttpServletRequest request){
       String token = request.getHeader(AUTHORIZATION_HEADER);

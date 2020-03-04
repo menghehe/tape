@@ -1,12 +1,14 @@
 package site.imcu.tape.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.HttpClientErrorException;
 import site.imcu.tape.pojo.ResponseData;
 
 /**
@@ -16,6 +18,14 @@ import site.imcu.tape.pojo.ResponseData;
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+    @ExceptionHandler(value = Exception.class)
+    @ResponseBody
+    public ResponseData ExceptionHandler(Exception e){
+        log.info(e.getMessage());
+        return ResponseData.builder().message(e.getMessage()).code(-1).build();
+    }
+
+
     @ExceptionHandler(value = BindException.class)
     @ResponseBody
     public ResponseData bindExceptionHandler(BindException bindException){
@@ -36,4 +46,14 @@ public class GlobalExceptionHandler {
         log.info(e.getMessage());
         return ResponseData.builder().code(-1).message(e.getMessage()).build();
     }
+
+    @ExceptionHandler(value = AccessDeniedException.class)
+    @ResponseBody
+    public ResponseData authenticationException(AccessDeniedException e){
+        log.info(e.getMessage());
+        return ResponseData.builder().code(-1).message(e.getMessage()).build();
+    }
+
+
+
 }

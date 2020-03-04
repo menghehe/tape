@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="site.imcu.tape.mapper.ClipMapper">
+	<insert id="insertClip">
+		insert into clip(title,source_file,clip_path,cover_path,creator,is_del,create_time,create_man)
+		values(#{title},#{sourceFile},#{clipPath},#{coverPath},#{user.id},0,#{createTime},#{createMan})
+	</insert>
+</mapper>

@@ -5,6 +5,6 @@ spring:
     username: root
     password: msm84516th
 
-upload:
+tape:
   path: "E://tape//"
 
