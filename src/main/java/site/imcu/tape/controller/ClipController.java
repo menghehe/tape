@@ -1,16 +1,10 @@
 package site.imcu.tape.controller;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import site.imcu.tape.pojo.Clip;
 import site.imcu.tape.pojo.ResponseData;
@@ -24,6 +18,7 @@ import site.imcu.tape.uitls.shell.LocalCommandExecutorImpl;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author: MengHe
@@ -80,12 +75,18 @@ public class ClipController {
 
         commandExecutor.executeCommand(thumbCommand, 5000);
 
-        clip.setCoverPath(uuid+".png");
+        clip.setThumbnail(uuid+".png");
 
         Date now = new Date();
         clip.setCreateMan(userId);
         clip.setCreateTime(now);
         Integer result = clipService.addClip(clip);
         return ResponseData.builder().code(result).build();
+    }
+
+    @GetMapping("/recommend")
+    public ResponseData getRecommend(){
+        List<Clip> recommendList = clipService.getRecommendList();
+        return ResponseData.builder().code(1).data(recommendList).build();
     }
 }

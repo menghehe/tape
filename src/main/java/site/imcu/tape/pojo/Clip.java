@@ -14,7 +14,7 @@ public class Clip extends Base {
     private String title;
     private String clipPath;
     private String sourceFile;
-    private String coverPath;
+    private String thumbnail;
     private Boolean transcoded;
     private User user;
     private Integer likeCount;
