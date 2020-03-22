@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="site.imcu.tape.mapper.LikeMapper">
+    <update id="deleteLike">
+        update tape_like set is_deleted = 1,update_time = #{like.updateTime},update_man=#{like.updateMan}
+        where target_id = #{like.targetId} and user_id = #{like.userId}
+    </update>
+</mapper>

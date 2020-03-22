@@ -3,6 +3,7 @@ package site.imcu.tape.pojo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.Length;
@@ -19,6 +20,7 @@ import java.util.Set;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@TableName(value = "tape_user")
 public class User extends Base implements UserDetails {
     @TableId(type = IdType.AUTO)
     private Integer id;

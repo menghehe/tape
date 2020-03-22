@@ -1,5 +1,8 @@
 package site.imcu.tape.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import site.imcu.tape.pojo.Clip;
 
@@ -12,7 +15,9 @@ import java.util.List;
 @Repository
 public interface ClipMapper {
 
-    /**add new clip
+    /**
+     * add new clip
+     *
      * @param clip clip
      * @return result
      */
@@ -23,4 +28,14 @@ public interface ClipMapper {
      * @return clipList
      */
     List<Clip> selectRecommendList();
+
+
+    /**
+     * 条件查询
+     *
+     * @param clip 条件
+     * @param page 条件
+     * @return page
+     */
+    IPage<Clip> selectClipPage(@Param("page") Page<Clip> page, @Param("clip") Clip clip);
 }

@@ -15,6 +15,8 @@ public class Base {
     private Integer createMan;
     private Date updateTime;
     private Integer updateMan;
+    @TableField(value = "is_deleted")
+    private Integer deleted;
 
     @TableField(exist = false)
     private Integer current;

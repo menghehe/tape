@@ -1,6 +1,8 @@
 package site.imcu.tape.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import site.imcu.tape.pojo.Clip;
+import site.imcu.tape.pojo.User;
 
 import java.util.List;
 
@@ -22,4 +24,12 @@ public interface IClipService {
      * @return clipList
      */
     List<Clip> getRecommendList();
+
+    /**
+     * 条件查询
+     * @param clip c
+     * @param currentUser u
+     * @return p
+     */
+    IPage<Clip> getClipPage(Clip clip, User currentUser);
 }

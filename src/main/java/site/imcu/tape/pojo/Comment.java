@@ -8,23 +8,18 @@ import lombok.EqualsAndHashCode;
 
 /**
  * @author: MengHe
- * @date: 2020/2/22 17:01
+ * @date: 2020/3/14 16:08
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-@TableName(value = "tape_clip")
-public class Clip extends Base {
+@TableName(value = "tape_comment")
+public class Comment extends Base {
     @TableId(type = IdType.AUTO)
     private Integer id;
-    private String title;
-    private String clipPath;
-    private String sourceFile;
-    private String thumbnail;
-    private Integer creator;
-    private Boolean transcoded;
-    private User user;
-    private Integer likeCount;
-    private Integer commentCount;
+    private String text;
+    private Integer userId;
+    private Integer clipId;
+    private Integer likedCount;
     private Boolean liked;
-
+    private User user;
 }

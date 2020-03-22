@@ -4,8 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +17,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import site.imcu.tape.service.impl.UserServiceImpl;
 
-import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
@@ -95,25 +93,24 @@ public class TokenProvider implements InitializingBean {
       return new UsernamePasswordAuthenticationToken(principal, token, authorities);
    }
 
-   public Integer getCurrentUserId(){
+   public site.imcu.tape.pojo.User getCurrentUser(){
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//      Object principal = authentication.getPrincipal();
+//      site.imcu.tape.pojo.User user1 = new site.imcu.tape.pojo.User();
+//      BeanUtils.copyProperties(principal,user1);
       Object credentials = authentication.getCredentials();
       Claims claims = Jwts.parser()
               .setSigningKey(key)
               .parseClaimsJws(credentials.toString())
               .getBody();
-      return claims.get("userId", Integer.class);
+      Integer userId = claims.get("userId", Integer.class);
+      String username = claims.get("username", String.class);
+      site.imcu.tape.pojo.User user = new site.imcu.tape.pojo.User();
+      user.setId(userId);
+      user.setUsername(username);
+      return user;
    }
 
-
-   public String getUsername(HttpServletRequest request){
-      String token = request.getHeader(AUTHORIZATION_HEADER);
-      Claims claims = Jwts.parser()
-              .setSigningKey(key)
-              .parseClaimsJws(token)
-              .getBody();
-      return claims.get("username", String.class);
-   }
 
    public boolean validateToken(String authToken) {
       try {

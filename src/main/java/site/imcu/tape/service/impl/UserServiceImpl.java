@@ -37,7 +37,7 @@ public class UserServiceImpl implements IUserService {
         Set<String> roles = new HashSet<>();
         for (Authority authority : authoritySet) {
             if (authority.getAuthority().contains("ROLE")){
-                roles.add(authority.getAuthority());
+                roles.add(authority.getAuthority().substring(5).toLowerCase());
             }
         }
         user.setRoles(roles);
@@ -61,4 +61,5 @@ public class UserServiceImpl implements IUserService {
         }
         return result;
     }
+
 }

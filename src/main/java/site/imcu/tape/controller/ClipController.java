@@ -1,6 +1,7 @@
 package site.imcu.tape.controller;
 
 import cn.hutool.core.util.IdUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +33,15 @@ public class ClipController {
     @Value("${tape.path}")
     private String tapePath;
 
+    @Value("${tape.clipBaseUrl}")
+    private String clipBaseUrl;
+
+    @Value("${tape.avatarBaseUrl}")
+    private String avatarBaseUrl;
+
+    @Value("${tape.coverBaseUrl}")
+    private String coverBaseUrl;
+
     @Autowired
     ClipServiceImpl clipService;
     @Autowired
@@ -41,10 +51,8 @@ public class ClipController {
     public ResponseData newClip(@RequestParam("video") MultipartFile video, String title) throws IOException {
         Clip clip = new Clip();
         clip.setTitle(title);
-        Integer userId = tokenProvider.getCurrentUserId();
-        User user = new User();
-        user.setId(userId);
-        clip.setUser(user);
+        User currentUser = tokenProvider.getCurrentUser();
+        clip.setUser(currentUser);
         String originalFilename = video.getOriginalFilename();
         String fileType= null;
         assert originalFilename != null;
@@ -78,7 +86,7 @@ public class ClipController {
         clip.setThumbnail(uuid+".png");
 
         Date now = new Date();
-        clip.setCreateMan(userId);
+        clip.setCreateMan(currentUser.getId());
         clip.setCreateTime(now);
         Integer result = clipService.addClip(clip);
         return ResponseData.builder().code(result).build();
@@ -89,4 +97,23 @@ public class ClipController {
         List<Clip> recommendList = clipService.getRecommendList();
         return ResponseData.builder().code(1).data(recommendList).build();
     }
+
+    @GetMapping("/get")
+    public ResponseData getClip(Clip clip){
+        User currentUser = tokenProvider.getCurrentUser();
+        IPage<Clip> clipPage = clipService.getClipPage(clip, currentUser);
+        return ResponseData.builder().code(1).data(clipPage).build();
+    }
+
+
+//    private List<Clip> fillUrl(List<Clip> clipList){
+//        for (Clip clip : clipList) {
+//            clip.setClipPath(clipBaseUrl+clip.getClipPath());
+//            clip.setThumbnail(coverBaseUrl+clip.getThumbnail());
+//            User user = clip.getUser();
+//            user.setAvatar(avatarBaseUrl+user.getAvatar());
+//            clip.setUser(user);
+//        }
+//        return clipList;
+//    }
 }
