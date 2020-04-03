@@ -1,6 +1,7 @@
 package site.imcu.tape.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -15,16 +16,20 @@ import lombok.EqualsAndHashCode;
 @TableName(value = "tape_clip")
 public class Clip extends Base {
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
     private String title;
     private String clipPath;
+    private String coverPath;
     private String sourceFile;
-    private String thumbnail;
-    private Integer creator;
-    private Boolean transcoded;
+    private Long creator;
+
+    @TableField(exist = false)
     private User user;
+    @TableField(exist = false)
     private Integer likeCount;
+    @TableField(exist = false)
     private Integer commentCount;
+    @TableField(exist = false)
     private Boolean liked;
 
 }

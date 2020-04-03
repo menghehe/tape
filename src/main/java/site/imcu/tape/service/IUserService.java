@@ -1,5 +1,7 @@
 package site.imcu.tape.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import site.imcu.tape.pojo.User;
 
 /**
@@ -20,4 +22,19 @@ public interface IUserService {
      * @return 结果
      */
     Integer addUser(User user);
+
+    /**
+     * 更新用户信息
+     * @param user user
+     * @return 1 成功 0失败
+     */
+    Integer updateUserById(User user);
+
+    /**
+     * 按条件查找用户
+     * @param page 分页参数
+     * @param user 条件
+     * @return 符合user的user
+     */
+    IPage<User> getUserList(Page<User> page, User user);
 }

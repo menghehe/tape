@@ -1,9 +1,13 @@
 package site.imcu.tape.pojo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author mengh
@@ -12,9 +16,9 @@ import java.util.Date;
 public class Base {
 
     private Date createTime;
-    private Integer createMan;
+    private Long createMan;
     private Date updateTime;
-    private Integer updateMan;
+    private Long updateMan;
     @TableField(value = "is_deleted")
     private Integer deleted;
 
@@ -22,4 +26,8 @@ public class Base {
     private Integer current;
     @TableField(exist = false)
     private Integer size;
+
+    @TableField(exist = false)
+    private String orders;
 }
+

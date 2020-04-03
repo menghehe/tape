@@ -11,7 +11,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -23,7 +22,8 @@ import java.util.Set;
 @TableName(value = "tape_user")
 public class User extends Base implements UserDetails {
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
+
     @Length(min=4, max=16,message = "用户名长度需要大于4，小于16")
     private String username;
     @Length(min=6, max=20,message = "密码长度需要大于6，小于20")
@@ -34,13 +34,23 @@ public class User extends Base implements UserDetails {
     private String avatar;
     private String signature;
     @TableField(exist = false)
-    private Set<Authority> authoritySet = new HashSet<>();
+    private Set<Authority> authorities;
+
     @TableField(exist = false)
-    private Set<String> roles;
+    private Integer followingCount;
+    @TableField(exist = false)
+    private Integer followerCount;
+    @TableField(exist = false)
+    private Integer clipCount;
+    /**
+     * 0未关注，1已关注，2对方关注了我，3互相关注
+     */
+    @TableField(exist = false)
+    private Integer friendShipStatus;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authoritySet;
+        return authorities;
     }
 
     @Override

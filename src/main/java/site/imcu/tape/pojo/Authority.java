@@ -12,8 +12,8 @@ import org.springframework.security.core.GrantedAuthority;
 @TableName(value = "tape_authority")
 public class Authority implements GrantedAuthority {
     private String authority;
-    private Integer userId;
-    private Integer authorityId;
+    private Long userId;
+    private Long authorityId;
 
     @Override
     public String getAuthority() {

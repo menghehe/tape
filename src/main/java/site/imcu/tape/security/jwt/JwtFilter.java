@@ -22,7 +22,6 @@ import java.io.IOException;
  * @author root
  */
 @Slf4j
-@Component
 public class JwtFilter extends GenericFilterBean {
 
    @Override

@@ -8,12 +8,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import site.imcu.tape.mapper.CommentMapper;
+import site.imcu.tape.pojo.Clip;
 import site.imcu.tape.pojo.Comment;
 import site.imcu.tape.pojo.User;
 import site.imcu.tape.service.ICommentService;
+import site.imcu.tape.uitls.PushUtil;
 import site.imcu.tape.uitls.RedisUtil;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +26,12 @@ import java.util.List;
 public class CommentServiceImpl implements ICommentService {
     @Autowired
     CommentMapper commentMapper;
+    @Autowired
+    UserServiceImpl userService;
+    @Autowired
+    ClipServiceImpl clipService;
+    @Autowired
+    PushUtil pushUtil;
     @Autowired
     RedisUtil redisUtil;
     @Override
@@ -42,6 +49,7 @@ public class CommentServiceImpl implements ICommentService {
         }else {
             redisUtil.append(key,String.valueOf(1));
         }
+        notifyComment(comment);
         return 1;
     }
 
@@ -49,7 +57,7 @@ public class CommentServiceImpl implements ICommentService {
     public IPage<Comment> getComment(Comment comment, User user) {
         Page<Comment> commentPage = new Page<>();
         BeanUtils.copyProperties(comment,commentPage);
-        IPage<Comment> pageResult = commentMapper.selectCommentList(commentPage, comment, user);
+        IPage<Comment> pageResult = commentMapper.selectCommentPage(commentPage, comment);
         List<Comment> commentList = fillComment(pageResult.getRecords(), user);
         pageResult.setRecords(commentList);
         return pageResult;
@@ -70,4 +78,17 @@ public class CommentServiceImpl implements ICommentService {
         return commentList;
     }
 
+    @Override
+    public Comment getCommentById(Long id) {
+        return commentMapper.selectById(id);
+    }
+
+
+    private void notifyComment(Comment comment){
+        Clip clipById = clipService.getClipById(comment.getClipId());
+        if (clipById.getCreator().equals(comment.getUserId())){
+            return;
+        }
+        pushUtil.push("视频收到一条评论",clipById.getCreator().toString());
+    }
 }

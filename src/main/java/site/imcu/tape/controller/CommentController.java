@@ -32,7 +32,7 @@ public class CommentController {
 
     @PostMapping("/add")
     public ResponseData addComment(@RequestBody Comment comment){
-        Integer currentUserId = tokenProvider.getCurrentUser().getId();
+        Long currentUserId = tokenProvider.getCurrentUser().getId();
         comment.setUserId(currentUserId);
         Integer result = commentService.addComment(comment);
         if (result==1){

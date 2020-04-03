@@ -1,6 +1,7 @@
 package site.imcu.tape.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -15,9 +16,12 @@ import lombok.EqualsAndHashCode;
 @TableName(value = "tape_like")
 public class Like extends Base {
     @TableId(type = IdType.AUTO)
-    private Integer id;
-    private String type;
-    private Integer userId;
-    private Integer targetId;
-    private User user;
+    private Long id;
+    private Integer likeType;
+    private Long userId;
+    private Long targetId;
+    @TableField(exist = false)
+    private Clip clip;
+    @TableField(exist = false)
+    private Comment comment;
 }

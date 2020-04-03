@@ -8,6 +8,7 @@ import site.imcu.tape.pojo.Like;
 import site.imcu.tape.pojo.ResponseData;
 import site.imcu.tape.security.jwt.TokenProvider;
 import site.imcu.tape.service.impl.LikeServiceImpl;
+import site.imcu.tape.uitls.PushUtil;
 
 /**
  * @author: MengHe
@@ -19,11 +20,13 @@ public class LikeController {
     LikeServiceImpl likeService;
     @Autowired
     TokenProvider tokenProvider;
+    @Autowired
+    PushUtil pushUtil;
 
 
     @PostMapping("/add")
     public ResponseData addLike(Like like){
-        Integer currentUserId = tokenProvider.getCurrentUser().getId();
+        Long currentUserId = tokenProvider.getCurrentUser().getId();
         like.setUserId(currentUserId);
         Integer result = likeService.addLike(like);
         if (result==1){
@@ -35,7 +38,7 @@ public class LikeController {
 
     @PutMapping("/cancel")
     public ResponseData cancelLike(Like like){
-        Integer currentUserId = tokenProvider.getCurrentUser().getId();
+        Long currentUserId = tokenProvider.getCurrentUser().getId();
         like.setUserId(currentUserId);
         Integer result = likeService.unLike(like);
         if (result==1){

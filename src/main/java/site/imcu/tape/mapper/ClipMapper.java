@@ -1,5 +1,6 @@
 package site.imcu.tape.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -13,21 +14,14 @@ import java.util.List;
  * @date: 2020/2/23 15:32
  */
 @Repository
-public interface ClipMapper {
+public interface ClipMapper extends BaseMapper<Clip> {
 
-    /**
-     * add new clip
-     *
-     * @param clip clip
-     * @return result
-     */
-    Integer insertClip(Clip clip);
 
     /***
      * 查询推荐的clip
      * @return clipList
      */
-    List<Clip> selectRecommendList();
+    List<Clip> selectRecommendList(@Param("page") Page<Clip> page);
 
 
     /**
@@ -38,4 +32,6 @@ public interface ClipMapper {
      * @return page
      */
     IPage<Clip> selectClipPage(@Param("page") Page<Clip> page, @Param("clip") Clip clip);
+
+
 }

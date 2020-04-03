@@ -18,10 +18,9 @@ public interface CommentMapper extends BaseMapper<Comment> {
     /**
      * 查询评论
      *
-     * @param page    分页参数
+     * @param page 分页参数
      * @param comment 评论
-     * @param user 当前user
      * @return commentList
      */
-    IPage<Comment> selectCommentList(@Param("page") Page<Comment> page, @Param("comment") Comment comment, @Param("user") User user);
+    IPage<Comment> selectCommentPage(@Param("page") Page<Comment> page, @Param("comment") Comment comment);
 }

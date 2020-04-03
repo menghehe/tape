@@ -1,6 +1,7 @@
 package site.imcu.tape.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import site.imcu.tape.pojo.Clip;
 import site.imcu.tape.pojo.User;
 
@@ -17,19 +18,44 @@ public interface IClipService {
      * @param clip clip
      * @return result
      */
-    Integer addClip(Clip clip);
+    Integer createClip(Clip clip);
 
     /**
      * 查询推荐clip
+     * @param page page
      * @return clipList
      */
-    List<Clip> getRecommendList();
+    List<Clip> getRecommendList(Page<Clip> page);
 
     /**
      * 条件查询
+     *
+     * @param page
      * @param clip c
      * @param currentUser u
      * @return p
      */
-    IPage<Clip> getClipPage(Clip clip, User currentUser);
+    IPage<Clip> getClipPage(Page<Clip> page, Clip clip, User currentUser);
+
+    /**
+     * 查询用户clip数
+     * @param userId userId
+     * @return clip 数
+     */
+    Integer countClip(Long userId);
+
+    /**
+     * 根据id获取clip
+     * @param id id
+     * @return clip
+     */
+    Clip getClipById(Long id);
+
+    /**
+     * 更新clip
+     * @param clip clip
+     * @return 1成功 2失败
+     */
+    Integer updateClip(Clip clip);
+
 }

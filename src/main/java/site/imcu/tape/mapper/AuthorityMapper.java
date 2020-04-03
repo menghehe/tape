@@ -16,7 +16,7 @@ public interface AuthorityMapper extends BaseMapper<Authority> {
      * @param userId 用户id
      * @return 权限集合
      */
-    Set<Authority> selectAuthorityByUserId(Integer userId);
+    Set<Authority> selectAuthorityByUserId(Long userId);
 
     /**
      * 为用户添加权限

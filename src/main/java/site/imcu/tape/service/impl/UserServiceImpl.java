@@ -1,6 +1,8 @@
 package site.imcu.tape.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -9,6 +11,7 @@ import site.imcu.tape.mapper.AuthorityMapper;
 import site.imcu.tape.mapper.UserMapper;
 import site.imcu.tape.pojo.Authority;
 import site.imcu.tape.pojo.User;
+import site.imcu.tape.security.jwt.TokenProvider;
 import site.imcu.tape.service.IUserService;
 
 import java.util.Date;
@@ -26,23 +29,34 @@ public class UserServiceImpl implements IUserService {
     UserMapper userMapper;
     @Autowired
     AuthorityMapper authorityMapper;
+    @Autowired
+    FriendServiceImpl friendService;
+    @Autowired
+    ClipServiceImpl clipService;
+    @Autowired
+    TokenProvider tokenProvider;
     @Override
     public User getUserByName(String username) {
-        User user = userMapper.selectOne(new QueryWrapper<User>().eq("username", username));
+        User user = userMapper.selectByName(username);
         if (user==null){
             return null;
         }
-        Set<Authority> authoritySet = authorityMapper.selectAuthorityByUserId(user.getId());
-        user.setAuthoritySet(authoritySet);
-        Set<String> roles = new HashSet<>();
-        for (Authority authority : authoritySet) {
-            if (authority.getAuthority().contains("ROLE")){
-                roles.add(authority.getAuthority().substring(5).toLowerCase());
+        user.setFollowerCount(friendService.countFollower(user.getId()));
+        user.setFollowingCount(friendService.countFollowing(user.getId()));
+        user.setClipCount(clipService.countClip(user.getId()));
+        User currentUser;
+        try {
+            currentUser = tokenProvider.getCurrentUser();
+            if (!username.equals(currentUser.getUsername())){
+                user.setFriendShipStatus(friendService.getFriendShipStatus(currentUser.getId(),user.getId()));
             }
+            return user;
+        } catch (Exception e){
+            return user;
         }
-        user.setRoles(roles);
-        return user;
+
     }
+
 
     @Override
     public Integer addUser(User user) {
@@ -51,15 +65,36 @@ public class UserServiceImpl implements IUserService {
         user.setPassword(encode);
         Date now = new Date();
         user.setCreateTime(now);
-        user.setCreateMan(0);
+        user.setCreateMan((long) 0);
         int result = userMapper.insert(user);
         if (result==1){
             Authority authority = new Authority();
-            authority.setAuthorityId(1);
+            authority.setAuthorityId((long) 1);
             authority.setUserId(user.getId());
             authorityMapper.insertUserAuthority(authority);
         }
         return result;
     }
 
+    @Override
+    public Integer updateUserById(User user) {
+        user.setUpdateTime(new Date());
+        return userMapper.updateById(user);
+    }
+
+    @Override
+    public IPage<User> getUserList(Page<User> page, User user) {
+        IPage<User> list = userMapper.selectPage(page, user);
+        return setUserFiled(list);
+    }
+
+
+    private IPage<User> setUserFiled(IPage<User> userPage){
+        for (User user : userPage.getRecords()) {
+            user.setFollowerCount(friendService.countFollower(user.getId()));
+            user.setFollowingCount(friendService.countFollowing(user.getId()));
+            user.setClipCount(clipService.countClip(user.getId()));
+        }
+        return userPage;
+    }
 }

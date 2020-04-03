@@ -28,4 +28,12 @@ public interface ICommentService {
      */
     IPage<Comment> getComment(Comment comment, User user);
 
+
+    /**
+     * 根据id获取comment
+     * @param id commentId
+     * @return comment
+     */
+    Comment getCommentById(Long id);
+
 }

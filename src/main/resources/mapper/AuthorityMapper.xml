@@ -5,10 +5,10 @@
 
 	<select id="selectAuthorityByUserId" resultType="site.imcu.tape.pojo.Authority">
 		select t2.authority from tape_user_authority t1
-		inner join tape_authority t2 on t1.authority = t2.id
-		where t1.user = #{userId}
+		inner join tape_authority t2 on t1.authority_id = t2.id
+		where t1.user_id = #{userId}
 	</select>
 	<insert id="insertUserAuthority">
-		insert into tape_user_authority (user, authority) VALUES (#{userId},#{authorityId})
+		insert into tape_user_authority (user_id, authority_id) VALUES (#{userId},#{authorityId})
 	</insert>
 </mapper>

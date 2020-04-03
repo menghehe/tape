@@ -12,10 +12,4 @@ import site.imcu.tape.pojo.Like;
 @Repository
 public interface LikeMapper extends BaseMapper<Like> {
 
-    /**
-     * 喜欢设置删除标志
-     * @param like
-     * @return
-     */
-    int deleteLike(@Param("like") Like like);
 }
