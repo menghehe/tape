@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.imcu.tape.mapper.FriendMapper">
+
+    <select id="selectFollower" resultType="site.imcu.tape.pojo.User">
+        select t2.id, t2.username, t2.nickname, t2.phone, t2.email, t2.avatar, t2.signature,t2.update_time, t2.update_man, t2.create_time, t2.create_man, t2.is_deleted
+        from tape_friend t1
+        inner join tape_user t2 on t1.follower = t2.id and t2.is_deleted = 0
+        where t1.following = #{userId} and t1.is_deleted = 0
+        order by t1.create_time desc
+    </select>
+
+    <select id="selectFollowing" resultType="site.imcu.tape.pojo.User">
+        select t2.id, t2.username, t2.nickname, t2.phone, t2.email, t2.avatar, t2.signature, t2.update_time, t2.update_man, t2.create_time, t2.create_man, t2.is_deleted
+        from tape_friend t1
+        inner join tape_user t2 on t1.following = t2.id and t2.is_deleted = 0
+        where t1.follower = #{userId} and t1.is_deleted = 0
+        order by t1.create_time desc
+    </select>
+</mapper>
