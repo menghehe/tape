@@ -1,6 +1,5 @@
 package site.imcu.tape.controller;
 
-import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
@@ -20,9 +19,6 @@ import site.imcu.tape.pojo.ResponseData;
 import site.imcu.tape.pojo.User;
 import site.imcu.tape.security.jwt.TokenProvider;
 import site.imcu.tape.service.impl.ClipServiceImpl;
-import site.imcu.tape.uitls.shell.ExecuteResult;
-import site.imcu.tape.uitls.shell.LocalCommandExecutor;
-import site.imcu.tape.uitls.shell.LocalCommandExecutorImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +44,7 @@ public class ClipController {
     TokenProvider tokenProvider;
 
     @PostMapping("/create")
-    public ResponseData createClip(@RequestParam("video") MultipartFile video, String title) throws IOException {
+    public ResponseData createClip(@RequestParam("video") MultipartFile video, String title,String coverTime) throws IOException {
 
         String fileType= FileUtil.extName(video.getName());
         String fileId = IdUtil.fastSimpleUUID();
@@ -57,6 +53,7 @@ public class ClipController {
         video.transferTo(sourceFile);
 
         Clip clip = new Clip();
+        clip.setCoverTime(coverTime);
         clip.setSourceFile(sourceFilename);
         clip.setCoverPath(StrUtil.format("{}.png",fileId));
         clip.setClipPath(StrUtil.format("{}.m3u8",fileId));
@@ -73,7 +70,7 @@ public class ClipController {
     @GetMapping("/recommend")
     public ResponseData getRecommend(Clip clip){
         Page<Clip> pageParam = getPageParam(clip);
-        List<Clip> recommendList = clipService.getRecommendList(pageParam);
+        List<Clip> recommendList = clipService.getRecommendList(pageParam, tokenProvider.getCurrentUser());
         return ResponseData.builder().code(1).data(recommendList).build();
     }
 
@@ -85,6 +82,17 @@ public class ClipController {
         return ResponseData.builder().code(1).data(clipPage).build();
     }
 
+    @GetMapping("/show/{id}")
+    public ResponseData showClip(@PathVariable Long id){
+        User currentUser = tokenProvider.getCurrentUser();
+        Clip clip = clipService.getClipById(id, currentUser);
+        if (clip!=null){
+            return ResponseData.builder().code(1).data(clip).build();
+        }else {
+            return ResponseData.builder().code(-1).build();
+        }
+    }
+
     @GetMapping("/list")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseData getAll(Clip clip){
@@ -92,6 +100,7 @@ public class ClipController {
         IPage<Clip> clipPage = clipService.getClipPage(pageParam, clip,null);
         return ResponseData.builder().code(1).data(clipPage).build();
     }
+
 
     @PostMapping("/update")
     @PreAuthorize("hasRole('ADMIN')")

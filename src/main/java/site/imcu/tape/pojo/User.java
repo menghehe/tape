@@ -43,7 +43,7 @@ public class User extends Base implements UserDetails {
     @TableField(exist = false)
     private Integer clipCount;
     /**
-     * 0未关注，1已关注，2对方关注了我，3互相关注
+     * 0未关注，1已关注，2对方关注了我，3互相关注,-1是我自己
      */
     @TableField(exist = false)
     private Integer friendShipStatus;

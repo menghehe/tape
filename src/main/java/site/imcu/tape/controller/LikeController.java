@@ -1,9 +1,7 @@
 package site.imcu.tape.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import site.imcu.tape.pojo.Like;
 import site.imcu.tape.pojo.ResponseData;
 import site.imcu.tape.security.jwt.TokenProvider;
@@ -14,7 +12,8 @@ import site.imcu.tape.uitls.PushUtil;
  * @author: MengHe
  * @date: 2020/3/17 18:26
  */
-@RestController("/api/like")
+@RequestMapping("/api/like")
+@RestController
 public class LikeController {
     @Autowired
     LikeServiceImpl likeService;
@@ -24,10 +23,10 @@ public class LikeController {
     PushUtil pushUtil;
 
 
-    @PostMapping("/add")
-    public ResponseData addLike(Like like){
+    @PostMapping("/create")
+    public ResponseData createLike(@RequestBody Like like){
         Long currentUserId = tokenProvider.getCurrentUser().getId();
-        like.setUserId(currentUserId);
+        like.setFromId(currentUserId);
         Integer result = likeService.addLike(like);
         if (result==1){
             return ResponseData.builder().code(1).build();
@@ -36,10 +35,10 @@ public class LikeController {
         }
     }
 
-    @PutMapping("/cancel")
-    public ResponseData cancelLike(Like like){
+    @PostMapping("/destroy")
+    public ResponseData destroyLike(@RequestBody Like like){
         Long currentUserId = tokenProvider.getCurrentUser().getId();
-        like.setUserId(currentUserId);
+        like.setFromId(currentUserId);
         Integer result = likeService.unLike(like);
         if (result==1){
             return ResponseData.builder().code(1).build();
@@ -47,4 +46,6 @@ public class LikeController {
             return ResponseData.builder().code(-1).build();
         }
     }
+
+
 }

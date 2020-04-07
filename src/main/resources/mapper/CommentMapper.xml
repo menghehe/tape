@@ -2,10 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="site.imcu.tape.mapper.CommentMapper">
     <select id="selectCommentPage" resultType="site.imcu.tape.pojo.Comment">
-        select t1.id, t1.text, t1.user_id, t1.clip_id, t1.create_time, t1.create_man, t1.update_time, t1.update_man,
-               t2.id 'user.id',t2.username 'user.username',t2.avatar 'user.avatar'
+        select t1.id, t1.text, t1.from_id, t1.clip_id, t1.create_time, t1.create_man, t1.update_time, t1.update_man,
+               t2.id 'user.id',t2.username 'user.username',t2.avatar 'user.avatar',
+               t3.id 'clip.id',t3.title 'clip.title', t3.clip_path 'clip.clipPath', t3.cover_path 'clip.coverPath', t3.creator 'clip.creator', t3.create_time 'clip.createTime', t3.create_man 'clip.createMan',
+               t4.id 'clip.user.id', t4.username 'clip.user.username', t4.avatar 'clip.user.avatar'
         from tape_comment t1
-        inner join tape_user t2 on t1.user_id = t2.id
-        where t1.clip_id = #{comment.clipId} and t1.is_deleted = 0
+        inner join tape_user t2 on t1.from_id = t2.id
+        inner join tape_clip t3 on t1.clip_id = t3.id
+        inner join tape_user t4 on t1.to_id = t4.id
+        <where>
+            <if test="comment.clipId != null">
+                and t1.clip_id = #{comment.clipId}
+            </if>
+            <if test="comment.toId != null">
+                and t1.to_id = #{comment.toId}
+            </if>
+        </where>
     </select>
 </mapper>

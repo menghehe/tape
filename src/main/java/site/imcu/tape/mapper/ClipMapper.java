@@ -33,5 +33,12 @@ public interface ClipMapper extends BaseMapper<Clip> {
      */
     IPage<Clip> selectClipPage(@Param("page") Page<Clip> page, @Param("clip") Clip clip);
 
+    /**
+     * 按id查询
+     * @param id id
+     * @return clip
+     */
+    Clip selectById(@Param("id") Long id);
+
 
 }

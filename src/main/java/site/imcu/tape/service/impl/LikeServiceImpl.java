@@ -13,6 +13,8 @@ import site.imcu.tape.uitls.PushUtil;
 import site.imcu.tape.uitls.RedisUtil;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author: MengHe
@@ -32,27 +34,37 @@ public class LikeServiceImpl implements ILikeService {
     CommentServiceImpl commentService;
     @Autowired
     PushUtil pushUtil;
-
     Integer commentType = 2;
     Integer clipType = 1;
+    Map<Integer,String> typeMap = new HashMap<>(2);
+
+    {
+        typeMap.put(clipType,"clip");
+        typeMap.put(commentType,"comment");
+    }
     @Override
     public Integer addLike(Like like) {
         if (verifyLike(like)) {
             return 0;
         }
-        Like existed = likeMapper.selectOne(new QueryWrapper<Like>().eq("user_id", like.getUserId()).eq("type", like.getLikeType()).eq("target_id", like.getTargetId()));
+        Like existed = likeMapper.selectOne(new QueryWrapper<Like>().eq("from_id", like.getFromId()).eq("like_type", like.getLikeType()).eq("target_id", like.getTargetId()));
         if (existed!=null){
             if (existed.getDeleted()==1){
                 existed.setDeleted(0);
-                existed.setUpdateMan(like.getUserId());
+                existed.setUpdateMan(like.getFromId());
                 existed.setUpdateTime(new Date());
-                notifyLike(existed);
-                return likeMapper.updateById(like);
+                pushUtil.push("收到一条点赞",existed.getToId().toString());
+                int result = likeMapper.updateById(existed);
+                if (result==1){
+                    pushUtil.push("收到一条点赞",like.getToId().toString());
+                    likeMark(existed);
+                }
+                return result;
             }else {
                 return 0;
             }
         }
-        like.setCreateMan(like.getUserId());
+        like.setCreateMan(like.getFromId());
         like.setCreateTime(new Date());
         like.setDeleted(0);
         int result = likeMapper.insert(like);
@@ -60,40 +72,29 @@ public class LikeServiceImpl implements ILikeService {
             return 0;
         }
 
-        //clip likeCount++
-        String likeCountKey = StrUtil.format("{}:{}:likedCount", like.getLikeType(), like.getTargetId());
-        if (redisUtil.hasKey(likeCountKey)){
-            redisUtil.incrBy(likeCountKey,1);
-        }else {
-            redisUtil.append(likeCountKey, String.valueOf(1));
-        }
-
-        //redis存入user_like_clip 标志
-        String likedKey = StrUtil.format("user:{}:like:{}:{}", like.getUserId(),like.getLikeType(), like.getTargetId());
-        redisUtil.append(likedKey,"true");
-
-        notifyLike(like);
+        pushUtil.push("收到一条点赞",like.getToId().toString());
+        likeMark(like);
 
         return 1;
     }
 
     @Override
     public Integer unLike(Like like) {
-        QueryWrapper<Like> likeQueryWrapper = new QueryWrapper<>();
-        likeQueryWrapper.eq("type",like.getLikeType()).eq("targetId",like.getTargetId()).eq("user_id",like.getUserId());
-        Like existed = likeMapper.selectOne(likeQueryWrapper);
+        Like existed = likeMapper.selectOne(new QueryWrapper<Like>().eq("from_id", like.getFromId()).eq("like_type", like.getLikeType()).eq("target_id", like.getTargetId()));
         if (existed==null){
             return 0;
         }
-        like.setDeleted(1);
-        like.setUpdateTime(new Date());
-        like.setUpdateMan(like.getUserId());
-        likeMapper.updateById(like);
-        String likeCountKey = StrUtil.format("{}:{}:likedCount", like.getLikeType(), like.getTargetId());
-        redisUtil.incrBy(likeCountKey,-1);
-        String likedKey = StrUtil.format("user:{}:like:{}:{}", like.getUserId(),like.getLikeType(), like.getTargetId());
-        redisUtil.delete(likedKey);
-        return 1;
+        existed.setDeleted(1);
+        existed.setUpdateTime(new Date());
+        existed.setUpdateMan(like.getFromId());
+        int result = likeMapper.updateById(existed);
+        if (result==1){
+            String likeCountKey = StrUtil.format("{}:{}:likedCount", typeMap.get(like.getLikeType()), like.getTargetId());
+            redisUtil.incrBy(likeCountKey,-1);
+            String likedKey = StrUtil.format("user:{}:like:{}:{}", like.getFromId(),typeMap.get(like.getLikeType()), like.getTargetId());
+            redisUtil.delete(likedKey);
+        }
+        return result;
     }
 
 
@@ -101,27 +102,18 @@ public class LikeServiceImpl implements ILikeService {
         return !commentType.equals(like.getLikeType()) && !clipType.equals(like.getLikeType());
     }
 
-
-    private void notifyLike(Like like){
-        if (commentType.equals(like.getLikeType())){
-
-            Comment commentById = commentService.getCommentById(like.getTargetId());
-
-            if (like.getUserId().equals(commentById.getUserId())){
-                return;
-            }
-
-            pushUtil.push("评论收到一条点赞",commentById.getUserId().toString());
-
+    private void likeMark(Like like){
+        //clip likeCount++
+        String likeCountKey = StrUtil.format("{}:{}:likedCount", typeMap.get(like.getLikeType()), like.getTargetId());
+        if (redisUtil.hasKey(likeCountKey)){
+            redisUtil.incrBy(likeCountKey,1);
+        }else {
+            redisUtil.append(likeCountKey, String.valueOf(1));
         }
-        if (clipType.equals(like.getLikeType())){
-            Clip clipById = clipService.getClipById(like.getTargetId());
 
-            if (clipById.getCreator().equals(like.getUserId())){
-                return;
-            }
-
-            pushUtil.push("视频收到一条点赞",clipById.getCreator().toString());
-        }
+        //redis存入user_like_clip 标志
+        String likedKey = StrUtil.format("user:{}:like:{}:{}", like.getFromId(),typeMap.get(like.getLikeType()), like.getTargetId());
+        redisUtil.append(likedKey,"true");
     }
+
 }

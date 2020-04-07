@@ -24,6 +24,8 @@ public class Clip extends Base {
     private Long creator;
 
     @TableField(exist = false)
+    private String coverTime;
+    @TableField(exist = false)
     private User user;
     @TableField(exist = false)
     private Integer likeCount;
@@ -31,5 +33,7 @@ public class Clip extends Base {
     private Integer commentCount;
     @TableField(exist = false)
     private Boolean liked;
+    @TableField(exist = false)
+    private Long viewCount;
 
 }

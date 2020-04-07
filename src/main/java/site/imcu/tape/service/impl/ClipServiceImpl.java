@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import site.imcu.tape.mapper.ClipMapper;
 import site.imcu.tape.pojo.Clip;
 import site.imcu.tape.pojo.User;
@@ -17,6 +18,7 @@ import site.imcu.tape.uitls.RedisUtil;
 import site.imcu.tape.uitls.shell.LocalCommandExecutor;
 import site.imcu.tape.uitls.shell.LocalCommandExecutorImpl;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,8 +51,10 @@ public class ClipServiceImpl implements IClipService {
 
         String sliceCommand = StrUtil.format("ffmpeg -i {} -vcodec copy -acodec copy -hls_list_size 0 -vbsf h264_mp4toannexb {}", sourceFile, hls);
         commandExecutor.executeCommand(sliceCommand, 5000);
-
-        String coverCommand = StrUtil.format("ffmpeg -i {} -ss 00:00:01.000 -vframes 1 {}", sourceFile, cover);
+        if (StringUtils.isEmpty(clip.getCoverTime())){
+            clip.setCoverTime("00:00:01.000");
+        }
+        String coverCommand = StrUtil.format("ffmpeg -i {} -ss {} -vframes 1 {}", sourceFile,clip.getCoverTime(), cover);
         commandExecutor.executeCommand(coverCommand, 5000);
 
         return clipMapper.insert(clip);
@@ -70,9 +74,9 @@ public class ClipServiceImpl implements IClipService {
     }
 
     @Override
-    public List<Clip> getRecommendList(Page<Clip> page) {
+    public List<Clip> getRecommendList(Page<Clip> page, User currentUser) {
         List<Clip> clipList = clipMapper.selectRecommendList(page);
-        return fillClip(clipList, null);
+        return fillClip(clipList, currentUser);
     }
 
     private List<Clip> fillClip(List<Clip> clipList, User user){
@@ -81,11 +85,11 @@ public class ClipServiceImpl implements IClipService {
             user.setId((long) 0);
         }
         for (Clip clip : clipList) {
-            String likedKey = StrUtil.format("user:{}:like:clip{}", user.getId(), clip.getId());
+            String likedKey = StrUtil.format("user:{}:like:clip:{}", user.getId(), clip.getId());
             Boolean liked = redisUtil.hasKey(likedKey);
             clip.setLiked(liked);
 
-            String likeCountKey = StrUtil.format("clip:{}:likeCount", clip.getId());
+            String likeCountKey = StrUtil.format("clip:{}:likedCount", clip.getId());
             String likeCount = redisUtil.get(likeCountKey);
             clip.setLikeCount(NumberUtil.parseInt(likeCount));
 
@@ -97,8 +101,13 @@ public class ClipServiceImpl implements IClipService {
     }
 
     @Override
-    public Clip getClipById(Long id) {
-        return clipMapper.selectById(id);
+    public Clip getClipById(Long id, User user) {
+        Clip clip = clipMapper.selectById(id);
+        if (clip==null){
+            return null;
+        }
+        List<Clip> clipList = fillClip(Collections.singletonList(clip), user);
+        return clipList.get(0);
     }
 
     @Override

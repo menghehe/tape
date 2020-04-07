@@ -7,6 +7,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpClientErrorException;
 import site.imcu.tape.pojo.ResponseData;
@@ -15,16 +16,16 @@ import site.imcu.tape.pojo.ResponseData;
  * @author MengHe
  * @date 2020/1/2 9:50
  */
-@ControllerAdvice
+//@ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-    @ExceptionHandler(value = Exception.class)
-    @ResponseBody
-    public ResponseData exceptionHandler(Exception e){
-        e.printStackTrace();
-        log.info(e.getMessage());
-        return ResponseData.builder().message(e.getMessage()).code(-1).build();
-    }
+//    @ExceptionHandler(value = Exception.class)
+//    @ResponseBody
+//    public ResponseData exceptionHandler(Exception e){
+//        e.printStackTrace();
+//        log.info(e.getMessage());
+//        return ResponseData.builder().message(e.getMessage()).code(-1).build();
+//    }
 
 
     @ExceptionHandler(value = BindException.class)

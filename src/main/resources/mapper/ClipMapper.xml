@@ -3,13 +3,13 @@
 	
 <mapper namespace="site.imcu.tape.mapper.ClipMapper">
 	<select id="selectRecommendList" resultType="site.imcu.tape.pojo.Clip">
-		SELECT t1.id,t1.title,t1.clip_path,t1.thumbnail,
+		SELECT t1.id, t1.title, t1.source_file, t1.clip_path, t1.cover_path, t1.creator, t1.is_deleted deleted, t1.update_time, t1.update_man, t1.create_time, t1.create_man,
 		t2.id "user.id", t2.avatar "user.avatar" ,t2.username "user.username",t1.create_time
 		FROM tape_clip t1
 		INNER JOIN tape_user t2 on t1.creator = t2.id
 	</select>
     <select id="selectClipPage" resultType="site.imcu.tape.pojo.Clip">
-		SELECT t1.id,t1.title,t1.clip_path,t1.thumbnail,t1.is_deleted deleted,t1.create_time,t1.create_man,
+		SELECT t1.id,t1.title,t1.clip_path,t1.cover_path,t1.is_deleted deleted,t1.create_time,t1.create_man,t1.creator,
 			   t2.id "user.id", t2.avatar "user.avatar" ,t2.username "user.username",t1.create_time
 		FROM tape_clip t1
 		INNER JOIN tape_user t2 on t1.creator = t2.id
@@ -22,5 +22,13 @@
 			</if>
 		</where>
 		ORDER BY t1.create_time
+	</select>
+
+	<select id="selectById" resultType="site.imcu.tape.pojo.Clip">
+		SELECT t1.id, t1.title, t1.source_file, t1.clip_path, t1.cover_path, t1.creator, t1.is_deleted deleted, t1.update_time, t1.update_man, t1.create_time, t1.create_man,
+			   t2.id "user.id", t2.avatar "user.avatar" ,t2.username "user.username",t1.create_time
+		FROM tape_clip t1
+		INNER JOIN tape_user t2 on t1.creator = t2.id
+		where t1.id = #{id}
 	</select>
 </mapper>

@@ -4,6 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,10 +73,15 @@ public class UserController {
 
     @GetMapping("/info")
     public ResponseData getInfo(String username){
+        String currentUser = tokenProvider.getCurrentUser().getUsername();
         if (StrUtil.isBlank(username)){
-            username = tokenProvider.getCurrentUser().getUsername();
+            username = currentUser;
         }
         User user = userService.getUserByName(username);
+        if (currentUser.equals(username)){
+            //我自己
+            user.setFriendShipStatus(-1);
+        }
         return ResponseData.builder().code(1).data(user).build();
     }
 

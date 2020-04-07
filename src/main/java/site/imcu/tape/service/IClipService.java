@@ -23,9 +23,10 @@ public interface IClipService {
     /**
      * 查询推荐clip
      * @param page page
+     * @param currentUser
      * @return clipList
      */
-    List<Clip> getRecommendList(Page<Clip> page);
+    List<Clip> getRecommendList(Page<Clip> page, User currentUser);
 
     /**
      * 条件查询
@@ -47,9 +48,10 @@ public interface IClipService {
     /**
      * 根据id获取clip
      * @param id id
+     * @param user
      * @return clip
      */
-    Clip getClipById(Long id);
+    Clip getClipById(Long id, User user);
 
     /**
      * 更新clip

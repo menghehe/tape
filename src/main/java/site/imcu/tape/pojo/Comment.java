@@ -18,7 +18,8 @@ public class Comment extends Base {
     @TableId(type = IdType.AUTO)
     private Long id;
     private String text;
-    private Long userId;
+    private Long fromId;
+    private Long toId;
     private Long clipId;
     private Integer likedCount;
     private Boolean liked;

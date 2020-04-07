@@ -18,7 +18,8 @@ public class Like extends Base {
     @TableId(type = IdType.AUTO)
     private Long id;
     private Integer likeType;
-    private Long userId;
+    private Long fromId;
+    private Long toId;
     private Long targetId;
     @TableField(exist = false)
     private Clip clip;

@@ -36,7 +36,7 @@ public class CommentServiceImpl implements ICommentService {
     RedisUtil redisUtil;
     @Override
     public Integer addComment(Comment comment) {
-        comment.setCreateMan(comment.getUserId());
+        comment.setCreateMan(comment.getFromId());
         comment.setCreateTime(new Date());
         comment.setDeleted(0);
         int result = commentMapper.insert(comment);
@@ -49,7 +49,9 @@ public class CommentServiceImpl implements ICommentService {
         }else {
             redisUtil.append(key,String.valueOf(1));
         }
-        notifyComment(comment);
+        if (!comment.getToId().equals(comment.getFromId())){
+            pushUtil.push("收到一条评论",comment.getToId().toString());
+        }
         return 1;
     }
 
@@ -66,9 +68,7 @@ public class CommentServiceImpl implements ICommentService {
     private List<Comment> fillComment(List<Comment> commentList,User user){
         for (Comment comment : commentList) {
             String likedKey = StrUtil.format("user:{}:like:comment:{}", user.getId(), comment.getId());
-            if (redisUtil.hasKey(likedKey)){
-                comment.setLiked(true);
-            }
+            comment.setLiked(redisUtil.hasKey(likedKey));
 
             String likedCountKey = StrUtil.format("comment:{}:likedCount", comment.getId());
             String likedCount = redisUtil.get(likedCountKey);
@@ -83,12 +83,4 @@ public class CommentServiceImpl implements ICommentService {
         return commentMapper.selectById(id);
     }
 
-
-    private void notifyComment(Comment comment){
-        Clip clipById = clipService.getClipById(comment.getClipId());
-        if (clipById.getCreator().equals(comment.getUserId())){
-            return;
-        }
-        pushUtil.push("视频收到一条评论",clipById.getCreator().toString());
-    }
 }
