@@ -2,6 +2,7 @@ package site.imcu.tape.service.impl;
 
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.BeanUtils;
@@ -13,6 +14,7 @@ import site.imcu.tape.pojo.Comment;
 import site.imcu.tape.pojo.User;
 import site.imcu.tape.service.ICommentService;
 import site.imcu.tape.uitls.PushUtil;
+import site.imcu.tape.uitls.RedisKey;
 import site.imcu.tape.uitls.RedisUtil;
 
 import java.util.Date;
@@ -34,6 +36,8 @@ public class CommentServiceImpl implements ICommentService {
     PushUtil pushUtil;
     @Autowired
     RedisUtil redisUtil;
+    @Autowired
+    RedisKey redisKey;
     @Override
     public Integer addComment(Comment comment) {
         comment.setCreateMan(comment.getFromId());
@@ -43,7 +47,7 @@ public class CommentServiceImpl implements ICommentService {
         if (result!=1){
             return 0;
         }
-        String key = StrUtil.format("clip:{}:commentCount", comment.getClipId());
+        String key =redisKey.clipCommentCount(comment.getClipId());
         if (redisUtil.hasKey(key)) {
             redisUtil.incrBy(key,1);
         }else {
@@ -67,10 +71,10 @@ public class CommentServiceImpl implements ICommentService {
 
     private List<Comment> fillComment(List<Comment> commentList,User user){
         for (Comment comment : commentList) {
-            String likedKey = StrUtil.format("user:{}:like:comment:{}", user.getId(), comment.getId());
+            String likedKey = redisKey.userLikedComment(user.getId(), comment.getId());
             comment.setLiked(redisUtil.hasKey(likedKey));
 
-            String likedCountKey = StrUtil.format("comment:{}:likedCount", comment.getId());
+            String likedCountKey = redisKey.commentLikedCount(comment.getId());
             String likedCount = redisUtil.get(likedCountKey);
 
             comment.setLikedCount(NumberUtil.parseInt(likedCount));
@@ -83,4 +87,8 @@ public class CommentServiceImpl implements ICommentService {
         return commentMapper.selectById(id);
     }
 
+    @Override
+    public List<Comment> getAll() {
+        return commentMapper.selectList(new QueryWrapper<Comment>().eq("is_deleted", 0));
+    }
 }

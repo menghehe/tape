@@ -36,4 +36,7 @@ public interface ICommentService {
      */
     Comment getCommentById(Long id);
 
+
+    List<Comment> getAll();
+
 }

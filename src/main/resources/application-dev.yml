@@ -1,8 +1,8 @@
 spring:
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/tape?characterEncoding=UTF-8&serverTimezone=GMT%2B8
-    username: root
+    url: jdbc:mysql://139.224.198.141:3306/tape?characterEncoding=UTF-8&serverTimezone=GMT%2B8
+    username: tape
     password: msm84516th
   redis:
     host: 139.224.198.141

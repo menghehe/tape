@@ -29,12 +29,13 @@ public class User extends Base implements UserDetails {
     @Length(min=6, max=20,message = "密码长度需要大于6，小于20")
     private String password;
     private String nickname;
-    private String phone;
-    private String email;
     private String avatar;
     private String signature;
     @TableField(exist = false)
     private Set<Authority> authorities;
+
+    @TableField(exist = false)
+    private Set<String> roles;
 
     @TableField(exist = false)
     private Integer followingCount;

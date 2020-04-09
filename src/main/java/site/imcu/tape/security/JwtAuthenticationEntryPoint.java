@@ -17,10 +17,12 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
    public void commence(HttpServletRequest request,
                         HttpServletResponse response,
                         AuthenticationException authException) throws IOException {
-      ResponseData responseData = ResponseData.builder().message(authException.getMessage()).code(-2).build();
-      response.getWriter().write(JSONObject.toJSONString(responseData));
-      response.setContentType("application/json;charset=UTF-8");
-      response.getWriter().write(JSONObject.toJSONString(responseData));
+//      ResponseData responseData = ResponseData.builder().message(authException.getMessage()).code(-2).build();
+//      response.getWriter().write(JSONObject.toJSONString(responseData));
+//      response.setContentType("application/json;charset=UTF-8");
+//      response.getWriter().write(JSONObject.toJSONString(responseData));
+      response.sendError(HttpServletResponse.SC_FORBIDDEN, authException.getMessage());
+
    }
 
 

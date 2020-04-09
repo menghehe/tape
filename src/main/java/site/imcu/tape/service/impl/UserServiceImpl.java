@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import site.imcu.tape.mapper.AuthorityMapper;
@@ -41,6 +42,14 @@ public class UserServiceImpl implements IUserService {
         if (user==null){
             return null;
         }
+
+        Set<String> roles = new HashSet<>();
+        for (GrantedAuthority authority : user.getAuthorities()) {
+            if (authority.getAuthority().startsWith("ROLE")){
+                roles.add(authority.getAuthority().substring(5));
+            }
+        }
+        user.setRoles(roles);
         user.setFollowerCount(friendService.countFollower(user.getId()));
         user.setFollowingCount(friendService.countFollowing(user.getId()));
         user.setClipCount(clipService.countClip(user.getId()));
@@ -66,6 +75,7 @@ public class UserServiceImpl implements IUserService {
         Date now = new Date();
         user.setCreateTime(now);
         user.setCreateMan((long) 0);
+        user.setAvatar("default.jpg");
         int result = userMapper.insert(user);
         if (result==1){
             Authority authority = new Authority();
@@ -94,6 +104,13 @@ public class UserServiceImpl implements IUserService {
             user.setFollowerCount(friendService.countFollower(user.getId()));
             user.setFollowingCount(friendService.countFollowing(user.getId()));
             user.setClipCount(clipService.countClip(user.getId()));
+            Set<String> roles = new HashSet<>();
+            for (GrantedAuthority authority : user.getAuthorities()) {
+                if (authority.getAuthority().startsWith("ROLE")){
+                    roles.add(authority.getAuthority().substring(5));
+                }
+            }
+            user.setRoles(roles);
         }
         return userPage;
     }

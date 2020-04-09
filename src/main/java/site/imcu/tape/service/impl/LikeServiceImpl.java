@@ -10,10 +10,12 @@ import site.imcu.tape.pojo.Comment;
 import site.imcu.tape.pojo.Like;
 import site.imcu.tape.service.ILikeService;
 import site.imcu.tape.uitls.PushUtil;
+import site.imcu.tape.uitls.RedisKey;
 import site.imcu.tape.uitls.RedisUtil;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +34,8 @@ public class LikeServiceImpl implements ILikeService {
     ClipServiceImpl clipService;
     @Autowired
     CommentServiceImpl commentService;
+    @Autowired
+    RedisKey redisKey;
     @Autowired
     PushUtil pushUtil;
     Integer commentType = 2;
@@ -89,9 +93,9 @@ public class LikeServiceImpl implements ILikeService {
         existed.setUpdateMan(like.getFromId());
         int result = likeMapper.updateById(existed);
         if (result==1){
-            String likeCountKey = StrUtil.format("{}:{}:likedCount", typeMap.get(like.getLikeType()), like.getTargetId());
+            String likeCountKey = existed.getLikeType()==1?redisKey.clipLikedCount(existed.getTargetId()):redisKey.commentLikedCount(existed.getTargetId());
             redisUtil.incrBy(likeCountKey,-1);
-            String likedKey = StrUtil.format("user:{}:like:{}:{}", like.getFromId(),typeMap.get(like.getLikeType()), like.getTargetId());
+            String likedKey = existed.getLikeType()==1?redisKey.userLikedClip(existed.getFromId(),existed.getTargetId()):redisKey.userLikedComment(existed.getFromId(),existed.getTargetId());
             redisUtil.delete(likedKey);
         }
         return result;
@@ -104,7 +108,7 @@ public class LikeServiceImpl implements ILikeService {
 
     private void likeMark(Like like){
         //clip likeCount++
-        String likeCountKey = StrUtil.format("{}:{}:likedCount", typeMap.get(like.getLikeType()), like.getTargetId());
+        String likeCountKey = like.getLikeType()==1?redisKey.clipLikedCount(like.getTargetId()):redisKey.commentLikedCount(like.getTargetId());
         if (redisUtil.hasKey(likeCountKey)){
             redisUtil.incrBy(likeCountKey,1);
         }else {
@@ -112,8 +116,12 @@ public class LikeServiceImpl implements ILikeService {
         }
 
         //redis存入user_like_clip 标志
-        String likedKey = StrUtil.format("user:{}:like:{}:{}", like.getFromId(),typeMap.get(like.getLikeType()), like.getTargetId());
+        String likedKey = like.getLikeType()==1?redisKey.userLikedClip(like.getFromId(),like.getTargetId()):redisKey.userLikedComment(like.getFromId(),like.getTargetId());
         redisUtil.append(likedKey,"true");
     }
 
+    @Override
+    public List<Like> getAll() {
+        return likeMapper.selectList(new QueryWrapper<Like>().eq("is_deleted", 0));
+    }
 }

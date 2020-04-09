@@ -7,8 +7,6 @@
         <result column="username" property="username"/>
         <result column="password" property="password"/>
         <result column="nickname" property="nickname"/>
-        <result column="phone" property="phone"/>
-        <result column="email" property="email"/>
         <result column="avatar" property="avatar"/>
         <result column="signature" property="signature"/>
         <result column="update_time" property="updateTime"/>
@@ -21,7 +19,7 @@
         </collection>
     </resultMap>
     <select id="selectPage" resultMap="userMap">
-        select t1.id, t1.username, t1.password, t1.nickname, t1.phone, t1.email, t1.avatar, t1.signature,
+        select t1.id, t1.username, t1.password, t1.nickname, t1.avatar, t1.signature,
         t1.update_time, t1.update_man, t1.create_time, t1.create_man, t1.is_deleted,
         t3.authority
         from tape_user t1
@@ -29,7 +27,7 @@
         left join tape_authority t3 on t2.authority_id = t3.id
     </select>
     <select id="selectByName" resultMap="userMap">
-        select t1.id, t1.username, t1.password, t1.nickname, t1.phone, t1.email, t1.avatar, t1.signature,
+        select t1.id, t1.username, t1.password, t1.nickname,  t1.avatar, t1.signature,
         t1.update_time, t1.update_man, t1.create_time, t1.create_man, t1.is_deleted,
         t3.authority
         from tape_user t1

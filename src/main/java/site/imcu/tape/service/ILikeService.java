@@ -2,6 +2,8 @@ package site.imcu.tape.service;
 
 import site.imcu.tape.pojo.Like;
 
+import java.util.List;
+
 /**
  * @author: MengHe
  * @date: 2020/3/17 16:12
@@ -21,4 +23,10 @@ public interface ILikeService {
      * @return 0 1
      */
     Integer unLike(Like like);
+
+    /**
+     * 查询全部
+     * @return likeList
+     */
+    List<Like> getAll();
 }

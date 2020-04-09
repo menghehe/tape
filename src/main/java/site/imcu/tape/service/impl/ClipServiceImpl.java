@@ -14,6 +14,7 @@ import site.imcu.tape.mapper.ClipMapper;
 import site.imcu.tape.pojo.Clip;
 import site.imcu.tape.pojo.User;
 import site.imcu.tape.service.IClipService;
+import site.imcu.tape.uitls.RedisKey;
 import site.imcu.tape.uitls.RedisUtil;
 import site.imcu.tape.uitls.shell.LocalCommandExecutor;
 import site.imcu.tape.uitls.shell.LocalCommandExecutorImpl;
@@ -37,6 +38,9 @@ public class ClipServiceImpl implements IClipService {
 
     @Value("${tape.coverPath}")
     private String coverPath;
+
+    @Autowired
+    RedisKey redisKey;
 
     @Autowired
     ClipMapper clipMapper;
@@ -85,15 +89,15 @@ public class ClipServiceImpl implements IClipService {
             user.setId((long) 0);
         }
         for (Clip clip : clipList) {
-            String likedKey = StrUtil.format("user:{}:like:clip:{}", user.getId(), clip.getId());
+            String likedKey = redisKey.userLikedClip(user.getId(), clip.getId());
             Boolean liked = redisUtil.hasKey(likedKey);
             clip.setLiked(liked);
 
-            String likeCountKey = StrUtil.format("clip:{}:likedCount", clip.getId());
+            String likeCountKey = redisKey.clipLikedCount(clip.getId());
             String likeCount = redisUtil.get(likeCountKey);
             clip.setLikeCount(NumberUtil.parseInt(likeCount));
 
-            String commentCountKey = StrUtil.format("clip:{}:commentCount", clip.getId());
+            String commentCountKey = redisKey.clipCommentCount(clip.getId());
             String commentCount = redisUtil.get(commentCountKey);
             clip.setCommentCount(NumberUtil.parseInt(commentCount));
         }

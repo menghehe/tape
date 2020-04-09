@@ -21,7 +21,9 @@ public class Comment extends Base {
     private Long fromId;
     private Long toId;
     private Long clipId;
+    @TableField(exist = false)
     private Integer likedCount;
+    @TableField(exist = false)
     private Boolean liked;
     @TableField(exist = false)
     private User user;
