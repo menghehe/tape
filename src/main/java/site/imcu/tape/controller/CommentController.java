@@ -19,8 +19,6 @@ import site.imcu.tape.uitls.RedisUtil;
 @RequestMapping("/api/comment")
 public class CommentController {
 
-    @Value("${tape.avatarBaseUrl}")
-    private String avatarBaseUrl;
     @Autowired
     CommentServiceImpl commentService;
     @Autowired

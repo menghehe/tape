@@ -21,9 +21,8 @@ jPush:
   masterSecret: 094f385c6706a73074983bed
 
 tape:
-  sourceFilePath: "C://Users//root//OneDrive//tape//sourceFile//"
-  hlsPath: "C://Users//root//OneDrive//tape//hls//"
-  avatarPath: "C://Users//root//OneDrive//tape//avatar//"
-  coverPath: "C://Users//root//OneDrive//tape//cover//"
-
+  sourceFilePath: "C://Users//mengh//OneDrive//tape//sourceFile//"
+  hlsPath: "C://Users//mengh//OneDrive//tape//hls//"
+  avatarPath: "C://Users//mengh//OneDrive//tape//avatar//"
+  coverPath: "C://Users//mengh//OneDrive//tape//cover//"
 
