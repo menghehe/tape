@@ -22,6 +22,8 @@ public class Like extends Base {
     private Long toId;
     private Long targetId;
     @TableField(exist = false)
+    private User user;
+    @TableField(exist = false)
     private Clip clip;
     @TableField(exist = false)
     private Comment comment;

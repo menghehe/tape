@@ -67,14 +67,14 @@ public class ClipController {
         return ResponseData.builder().code(result).build();
     }
 
-    @GetMapping("/recommend")
-    public ResponseData getRecommend(Clip clip){
+    @PostMapping("/recommend")
+    public ResponseData getRecommend(@RequestBody Clip clip){
         Page<Clip> pageParam = getPageParam(clip);
         List<Clip> recommendList = clipService.getRecommendList(pageParam, tokenProvider.getCurrentUser());
         return ResponseData.builder().code(1).data(recommendList).build();
     }
 
-    @GetMapping("/get")
+    @PostMapping("/get")
     public ResponseData getClip(Clip clip){
         Page<Clip> pageParam = getPageParam(clip);
         User currentUser = tokenProvider.getCurrentUser();
@@ -93,9 +93,9 @@ public class ClipController {
         }
     }
 
-    @GetMapping("/list")
+    @PostMapping("/list")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseData getAll(Clip clip){
+    public ResponseData getAll(@RequestBody Clip clip){
         Page<Clip> pageParam = getPageParam(clip);
         IPage<Clip> clipPage = clipService.getClipPage(pageParam, clip,null);
         return ResponseData.builder().code(1).data(clipPage).build();
@@ -118,8 +118,6 @@ public class ClipController {
     private Page<Clip> getPageParam(Clip clip){
         Page<Clip> page = new Page<>();
         BeanUtils.copyProperties(clip,page);
-        List<OrderItem> orderItemList = JSONObject.parseArray(clip.getOrders(), OrderItem.class);
-        page.setOrders(orderItemList);
         return page;
     }
 

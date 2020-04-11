@@ -1,6 +1,8 @@
 package site.imcu.tape.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import site.imcu.tape.pojo.Like;
@@ -11,5 +13,5 @@ import site.imcu.tape.pojo.Like;
  */
 @Repository
 public interface LikeMapper extends BaseMapper<Like> {
-
+    IPage<Like> selectByPage(@Param("page") Page<Like> page, @Param("like") Like like);
 }

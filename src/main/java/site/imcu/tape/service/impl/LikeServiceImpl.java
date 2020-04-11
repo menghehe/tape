@@ -2,6 +2,8 @@ package site.imcu.tape.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import site.imcu.tape.mapper.LikeMapper;
@@ -101,6 +103,10 @@ public class LikeServiceImpl implements ILikeService {
         return result;
     }
 
+    @Override
+    public IPage<Like> getPage(Page<Like> page, Like like) {
+        return likeMapper.selectByPage(page, like);
+    }
 
     private boolean verifyLike(Like like){
         return !commentType.equals(like.getLikeType()) && !clipType.equals(like.getLikeType());

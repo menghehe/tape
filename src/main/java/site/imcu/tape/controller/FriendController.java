@@ -2,6 +2,7 @@ package site.imcu.tape.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import site.imcu.tape.pojo.Friend;
@@ -44,17 +45,19 @@ public class FriendController {
         }
     }
 
-    @GetMapping("/follower")
-    public ResponseData getFollower(){
+    @PostMapping("/follower")
+    public ResponseData getFollower(@RequestBody User user){
         Page<Friend> page = new Page<>();
+        BeanUtils.copyProperties(user, page);
         Long id = tokenProvider.getCurrentUser().getId();
         IPage<User> follower = friendService.getFollower(page, id);
         return ResponseData.builder().code(1).data(follower).build();
     }
 
-    @GetMapping("/following")
-    public ResponseData getFollowing(){
+    @PostMapping("/following")
+    public ResponseData getFollowing(@RequestBody User user){
         Page<Friend> page = new Page<>();
+        BeanUtils.copyProperties(user, page);
         Long id = tokenProvider.getCurrentUser().getId();
         IPage<User> following = friendService.getFollowing(page, id);
         return ResponseData.builder().code(1).data(following).build();

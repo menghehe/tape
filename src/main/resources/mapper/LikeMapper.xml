@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="site.imcu.tape.mapper.LikeMapper">
+    <select id="selectByPage" resultType="site.imcu.tape.pojo.Like">
+        select t1.id, t1.like_type, t1.from_id, t1.to_id, t1.target_id, t1.update_time, t1.update_man, t1.create_time, t1.create_man, t1.is_deleted,
+            t2.id 'user.id', t2.username 'user.username', t2.avatar 'user.avatar'
+        from tape_like t1
+        inner join tape_user t2 on t1.from_id = t2.id
+        <where>
+            t1.is_deleted = 0
+            <if test="like.toId != null">
+                and t1.to_id = #{like.toId}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -28,6 +28,6 @@ public class Base {
     private Integer size;
 
     @TableField(exist = false)
-    private String orders;
+    private List<OrderItem> orders;
 }
 

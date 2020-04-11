@@ -1,5 +1,7 @@
 package site.imcu.tape.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import site.imcu.tape.pojo.Like;
 
 import java.util.List;
@@ -29,4 +31,13 @@ public interface ILikeService {
      * @return likeList
      */
     List<Like> getAll();
+
+
+    /**
+     * 分页查询
+     * @param page 分页参数
+     * @param like like
+     * @return page
+     */
+    IPage<Like> getPage(Page<Like> page,Like like);
 }

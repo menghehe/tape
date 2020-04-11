@@ -1,5 +1,8 @@
 package site.imcu.tape.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import site.imcu.tape.pojo.Like;
@@ -45,6 +48,16 @@ public class LikeController {
         }else {
             return ResponseData.builder().code(-1).build();
         }
+    }
+
+    @PostMapping("/to_me")
+    public ResponseData getToMe(@RequestBody Like like){
+        Long id = tokenProvider.getCurrentUser().getId();
+        like.setToId(id);
+        Page<Like> likePage = new Page<>();
+        BeanUtils.copyProperties(like, likePage);
+        IPage<Like> page = likeService.getPage(likePage, like);
+        return ResponseData.builder().code(1).data(page).build();
     }
 
 

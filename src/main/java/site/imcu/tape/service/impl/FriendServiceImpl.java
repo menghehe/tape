@@ -87,18 +87,23 @@ public class FriendServiceImpl implements IFriendService {
 
     @Override
     public Integer getFriendShipStatus(Long userId,Long friendId) {
+        if (userId.equals(friendId)){
+            return -1;
+        }
         Integer following = friendMapper.selectCount(new QueryWrapper<Friend>().eq("follower", userId).eq("following", friendId).eq("is_deleted", 0));
         Integer follower = friendMapper.selectCount(new QueryWrapper<Friend>().eq("follower", friendId).eq("following", userId).eq("is_deleted", 0));
         if (following==0&&follower==0){
             return 0;
         }
-        if (following==1){
+        if (following==1&&follower==0){
             return 1;
         }
-        if (follower==1){
+        if (follower==1&&following==0){
             return 2;
         }
+
         return 3;
+
     }
 
 }
