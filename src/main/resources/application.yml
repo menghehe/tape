@@ -29,3 +29,9 @@ spring:
   profiles: prod
 server:
   port: 19025
+
+---
+spring:
+  profiles: home
+server:
+  port: 9250
