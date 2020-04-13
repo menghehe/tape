@@ -21,14 +21,6 @@ public interface IClipService {
     Integer createClip(Clip clip);
 
     /**
-     * 查询推荐clip
-     * @param page page
-     * @param currentUser
-     * @return clipList
-     */
-    List<Clip> getRecommendList(Page<Clip> page, User currentUser);
-
-    /**
      * 条件查询
      *
      * @param page

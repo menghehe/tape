@@ -19,9 +19,6 @@ import site.imcu.tape.uitls.RedisUtil;
 import site.imcu.tape.uitls.shell.LocalCommandExecutor;
 import site.imcu.tape.uitls.shell.LocalCommandExecutorImpl;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  * @author: MengHe
  * @date: 2020/2/23 15:35
@@ -67,9 +64,7 @@ public class ClipServiceImpl implements IClipService {
     @Override
     public IPage<Clip> getClipPage(Page<Clip> page, Clip clip, User currentUser) {
         IPage<Clip> clipPage = clipMapper.selectClipPage(page, clip);
-        List<Clip> clips = fillClip(clipPage.getRecords(), currentUser);
-        clipPage.setRecords(clips);
-        return clipPage;
+        return fillClipPage(clipPage,currentUser);
     }
 
     @Override
@@ -77,41 +72,40 @@ public class ClipServiceImpl implements IClipService {
         return clipMapper.selectCount(new QueryWrapper<Clip>().eq("creator",userId).eq("is_deleted",0));
     }
 
-    @Override
-    public List<Clip> getRecommendList(Page<Clip> page, User currentUser) {
-        List<Clip> clipList = clipMapper.selectRecommendList(page);
-        return fillClip(clipList, currentUser);
+
+    private IPage<Clip> fillClipPage(IPage<Clip> clipPage, User user){
+        for (Clip clip : clipPage.getRecords()) {
+            fillData(clip, user);
+        }
+        return clipPage;
     }
 
-    private List<Clip> fillClip(List<Clip> clipList, User user){
-        if (user==null){
-            user = new User();
-            user.setId((long) 0);
-        }
-        for (Clip clip : clipList) {
-            String likedKey = redisKey.userLikedClip(user.getId(), clip.getId());
-            Boolean liked = redisUtil.hasKey(likedKey);
-            clip.setLiked(liked);
+    private Clip fillClip(Clip clip, User user){
+        fillData(clip, user);
+        return clip;
+    }
 
-            String likeCountKey = redisKey.clipLikedCount(clip.getId());
-            String likeCount = redisUtil.get(likeCountKey);
-            clip.setLikeCount(NumberUtil.parseInt(likeCount));
+    private void fillData(Clip clip, User user) {
+        String likedKey = redisKey.userLikedClip(user.getId(), clip.getId());
+        Boolean liked = redisUtil.hasKey(likedKey);
+        clip.setLiked(liked);
 
-            String commentCountKey = redisKey.clipCommentCount(clip.getId());
-            String commentCount = redisUtil.get(commentCountKey);
-            clip.setCommentCount(NumberUtil.parseInt(commentCount));
-        }
-        return clipList;
+        String likeCountKey = redisKey.clipLikedCount(clip.getId());
+        String likeCount = redisUtil.get(likeCountKey);
+        clip.setLikeCount(NumberUtil.parseInt(likeCount));
+
+        String commentCountKey = redisKey.clipCommentCount(clip.getId());
+        String commentCount = redisUtil.get(commentCountKey);
+        clip.setCommentCount(NumberUtil.parseInt(commentCount));
     }
 
     @Override
-    public Clip getClipById(Long id, User user) {
+    public Clip getClipById(Long id, User currentUser) {
         Clip clip = clipMapper.selectById(id);
         if (clip==null){
             return null;
         }
-        List<Clip> clipList = fillClip(Collections.singletonList(clip), user);
-        return clipList.get(0);
+        return fillClip(clip,currentUser);
     }
 
     @Override

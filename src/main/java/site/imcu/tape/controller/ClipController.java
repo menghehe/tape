@@ -3,9 +3,7 @@ package site.imcu.tape.controller;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -67,21 +65,6 @@ public class ClipController {
         return ResponseData.builder().code(result).build();
     }
 
-    @PostMapping("/recommend")
-    public ResponseData getRecommend(@RequestBody Clip clip){
-        Page<Clip> pageParam = getPageParam(clip);
-        List<Clip> recommendList = clipService.getRecommendList(pageParam, tokenProvider.getCurrentUser());
-        return ResponseData.builder().code(1).data(recommendList).build();
-    }
-
-    @PostMapping("/get")
-    public ResponseData getClip(Clip clip){
-        Page<Clip> pageParam = getPageParam(clip);
-        User currentUser = tokenProvider.getCurrentUser();
-        IPage<Clip> clipPage = clipService.getClipPage(pageParam, clip, currentUser);
-        return ResponseData.builder().code(1).data(clipPage).build();
-    }
-
     @GetMapping("/show/{id}")
     public ResponseData showClip(@PathVariable Long id){
         User currentUser = tokenProvider.getCurrentUser();
@@ -94,10 +77,9 @@ public class ClipController {
     }
 
     @PostMapping("/list")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseData getAll(@RequestBody Clip clip){
+    public ResponseData listClip(@RequestBody Clip clip){
         Page<Clip> pageParam = getPageParam(clip);
-        IPage<Clip> clipPage = clipService.getClipPage(pageParam, clip,null);
+        IPage<Clip> clipPage = clipService.getClipPage(pageParam, clip,tokenProvider.getCurrentUser());
         return ResponseData.builder().code(1).data(clipPage).build();
     }
 

@@ -16,14 +16,6 @@ import java.util.List;
 @Repository
 public interface ClipMapper extends BaseMapper<Clip> {
 
-
-    /***
-     * 查询推荐的clip
-     * @return clipList
-     */
-    List<Clip> selectRecommendList(@Param("page") Page<Clip> page);
-
-
     /**
      * 条件查询
      *

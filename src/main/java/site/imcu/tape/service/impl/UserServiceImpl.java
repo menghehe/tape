@@ -93,7 +93,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public IPage<User> getUserList(Page<User> page, User user) {
+    public IPage<User> getUserPage(Page<User> page, User user) {
         IPage<User> list = userMapper.selectPage(page, user);
         return setUserFiled(list);
     }

@@ -36,5 +36,5 @@ public interface IUserService {
      * @param user 条件
      * @return 符合user的user
      */
-    IPage<User> getUserList(Page<User> page, User user);
+    IPage<User> getUserPage(Page<User> page, User user);
 }

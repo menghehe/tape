@@ -4,7 +4,6 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -91,12 +90,12 @@ public class UserController {
         return ResponseData.builder().code(1).build();
     }
 
-    @GetMapping("/list")
+    @PostMapping("/list")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseData getList(User user){
+    public ResponseData getList(@RequestBody User user){
         Page<User> pageParam = new Page<>();
         BeanUtils.copyProperties(user,pageParam);
-        IPage<User> page = userService.getUserList(pageParam, user);
+        IPage<User> page = userService.getUserPage(pageParam, user);
         return ResponseData.builder().code(1).data(page).build();
     }
 
