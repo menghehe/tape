@@ -9,6 +9,7 @@
 		where t1.user_id = #{userId}
 	</select>
 	<insert id="insertUserAuthority">
-		insert into tape_user_authority (user_id, authority_id) VALUES (#{userId},#{authorityId})
+		insert into tape_user_authority (user_id, authority_id,create_time,create_man)
+		VALUES (#{userId},#{authorityId},now(),0)
 	</insert>
 </mapper>
