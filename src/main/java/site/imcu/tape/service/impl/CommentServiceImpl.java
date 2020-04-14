@@ -1,15 +1,12 @@
 package site.imcu.tape.service.impl;
 
 import cn.hutool.core.util.NumberUtil;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import site.imcu.tape.mapper.CommentMapper;
-import site.imcu.tape.pojo.Clip;
 import site.imcu.tape.pojo.Comment;
 import site.imcu.tape.pojo.User;
 import site.imcu.tape.service.ICommentService;
@@ -21,17 +18,13 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author: MengHe
- * @date: 2020/3/14 16:22
+ * @author : MengHe
+ * @date : 2020/3/14 16:22
  */
 @Service
 public class CommentServiceImpl implements ICommentService {
     @Autowired
     CommentMapper commentMapper;
-    @Autowired
-    UserServiceImpl userService;
-    @Autowired
-    ClipServiceImpl clipService;
     @Autowired
     PushUtil pushUtil;
     @Autowired
@@ -53,18 +46,21 @@ public class CommentServiceImpl implements ICommentService {
         }else {
             redisUtil.append(key,String.valueOf(1));
         }
-        if (!comment.getToId().equals(comment.getFromId())){
-            pushUtil.push("收到一条评论",comment.getToId().toString());
-        }
+        notifyComment(comment);
         return 1;
     }
 
+    private void notifyComment(Comment comment){
+        if (comment.getFromId().equals(comment.getToId())){
+            return;
+        }
+        pushUtil.push("收到一条评论",comment.getToId().toString());
+    }
+
     @Override
-    public IPage<Comment> getComment(Comment comment, User user) {
-        Page<Comment> commentPage = new Page<>();
-        BeanUtils.copyProperties(comment,commentPage);
-        IPage<Comment> pageResult = commentMapper.selectCommentPage(commentPage, comment);
-        List<Comment> commentList = fillComment(pageResult.getRecords(), user);
+    public IPage<Comment> getCommentPage(Page<Comment> page, Comment comment, User currentUser) {
+        IPage<Comment> pageResult = commentMapper.selectCommentPage(page, comment);
+        List<Comment> commentList = fillComment(pageResult.getRecords(), currentUser);
         pageResult.setRecords(commentList);
         return pageResult;
     }
@@ -82,10 +78,6 @@ public class CommentServiceImpl implements ICommentService {
         return commentList;
     }
 
-    @Override
-    public Comment getCommentById(Long id) {
-        return commentMapper.selectById(id);
-    }
 
     @Override
     public List<Comment> getAll() {

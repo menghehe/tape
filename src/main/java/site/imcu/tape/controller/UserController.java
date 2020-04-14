@@ -1,5 +1,6 @@
 package site.imcu.tape.controller;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -11,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -77,10 +79,6 @@ public class UserController {
             username = currentUser;
         }
         User user = userService.getUserByName(username);
-        if (currentUser.equals(username)){
-            //我自己
-            user.setFriendShipStatus(-1);
-        }
         return ResponseData.builder().code(1).data(user).build();
     }
 
@@ -93,9 +91,7 @@ public class UserController {
     @PostMapping("/list")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseData getList(@RequestBody User user){
-        Page<User> pageParam = new Page<>();
-        BeanUtils.copyProperties(user,pageParam);
-        IPage<User> page = userService.getUserPage(pageParam, user);
+        IPage<User> page = userService.getUserPage(getPageParam(user), user);
         return ResponseData.builder().code(1).data(page).build();
     }
 
@@ -121,5 +117,40 @@ public class UserController {
         Integer result = userService.updateUserById(user);
         return ResponseData.builder().code(result==1?1:-1).build();
     }
+
+    @PostMapping("/lock")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseData lock(@RequestBody User user){
+        User userById = userService.getUserById(user.getId());
+        for (GrantedAuthority authority : userById.getAuthorities()) {
+            if (authority.getAuthority().equals("ROLE_ADMIN")){
+                return ResponseData.builder().code(-1).message("无法封禁管理员").build();
+            }
+        }
+        user.setDeleted(1);
+        user.setUpdateMan(tokenProvider.getCurrentUser().getId());
+        Integer result = userService.updateUserById(user);
+        return ResponseData.builder().code(result.equals(1)?1:-1).build();
+    }
+    @PostMapping("/unlock")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseData unlock(@RequestBody User user){
+        user.setDeleted(0);
+        user.setUpdateMan(tokenProvider.getCurrentUser().getId());
+        Integer result = userService.updateUserById(user);
+        return ResponseData.builder().code(result.equals(1)?1:-1).build();
+    }
+
+    private Page<User> getPageParam(User user){
+        Page<User> pageParam = new Page<>();
+        if (user.getCurrent()==null||user.getSize()==null){
+            return pageParam;
+        }
+        BeanUtils.copyProperties(user,pageParam);
+        return pageParam;
+    }
+
+
+
 
 }

@@ -59,11 +59,10 @@ public class LikeServiceImpl implements ILikeService {
                 existed.setDeleted(0);
                 existed.setUpdateMan(like.getFromId());
                 existed.setUpdateTime(new Date());
-                pushUtil.push("收到一条点赞",existed.getToId().toString());
                 int result = likeMapper.updateById(existed);
                 if (result==1){
-                    pushUtil.push("收到一条点赞",like.getToId().toString());
                     likeMark(existed);
+                    notifyLike(like);
                 }
                 return result;
             }else {
@@ -78,8 +77,8 @@ public class LikeServiceImpl implements ILikeService {
             return 0;
         }
 
-        pushUtil.push("收到一条点赞",like.getToId().toString());
         likeMark(like);
+        notifyLike(like);
 
         return 1;
     }
@@ -110,6 +109,10 @@ public class LikeServiceImpl implements ILikeService {
 
     private boolean verifyLike(Like like){
         return !commentType.equals(like.getLikeType()) && !clipType.equals(like.getLikeType());
+    }
+
+    private void notifyLike(Like like){
+        pushUtil.push("收到一条点赞",like.getToId().toString());
     }
 
     private void likeMark(Like like){

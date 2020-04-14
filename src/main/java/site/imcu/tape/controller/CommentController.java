@@ -1,8 +1,9 @@
 package site.imcu.tape.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import site.imcu.tape.pojo.Comment;
 import site.imcu.tape.pojo.ResponseData;
@@ -12,8 +13,8 @@ import site.imcu.tape.service.impl.CommentServiceImpl;
 import site.imcu.tape.uitls.RedisUtil;
 
 /**
- * @author: MengHe
- * @date: 2020/3/16 17:19
+ * @author : MengHe
+ * @date : 2020/3/16 17:19
  */
 @RestController
 @RequestMapping("/api/comment")
@@ -38,19 +39,29 @@ public class CommentController {
         }
     }
 
-    @GetMapping("/show")
-    public ResponseData getComment(Comment comment){
+    @PostMapping("/list")
+    public ResponseData listComment(@RequestBody Comment comment){
         User currentUser = tokenProvider.getCurrentUser();
-        IPage<Comment> page = commentService.getComment(comment, currentUser);
+        Page<Comment> commentPage = getPageParam(comment);
+        IPage<Comment> page = commentService.getCommentPage(commentPage,comment,currentUser);
         return ResponseData.builder().code(1).data(page).build();
     }
 
-    @GetMapping("/to_me")
-    public ResponseData getToMeComment(Comment comment){
+    @PostMapping("/to_me")
+    public ResponseData getToMeComment(@RequestBody Comment comment){
         User currentUser = tokenProvider.getCurrentUser();
         comment.setToId(currentUser.getId());
-        IPage<Comment> page = commentService.getComment(comment, currentUser);
+        IPage<Comment> page = commentService.getCommentPage(getPageParam(comment),comment,currentUser);
         return ResponseData.builder().code(1).data(page).build();
+    }
+
+    private Page<Comment> getPageParam(Comment comment){
+        Page<Comment> commentPage = new Page<>();
+        if (comment.getSize()==null||comment.getCurrent()==null){
+            return commentPage;
+        }
+        BeanUtils.copyProperties(comment,commentPage);
+        return commentPage;
     }
 
 }

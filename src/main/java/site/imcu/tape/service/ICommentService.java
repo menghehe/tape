@@ -22,21 +22,18 @@ public interface ICommentService {
 
     /**
      * 查询clip的评论
-     * @param comment clipId
-     * @param user user
-     * @return 评论
+     * @param page 分页参数
+     * @param comment 查询参数
+     * @param currentUser 当前用户
+     * @return commentPage
      */
-    IPage<Comment> getComment(Comment comment, User user);
+    IPage<Comment> getCommentPage(Page<Comment> page,Comment comment, User currentUser);
 
 
     /**
-     * 根据id获取comment
-     * @param id commentId
-     * @return comment
+     * 获取全部评论，仅redis同步使用
+     * @return commentList
      */
-    Comment getCommentById(Long id);
-
-
     List<Comment> getAll();
 
 }

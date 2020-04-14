@@ -6,8 +6,8 @@ import site.imcu.tape.pojo.Friend;
 import site.imcu.tape.pojo.User;
 
 /**
-* @author: MengHe
-* @date: 2020/3/27 13:17
+* @author : MengHe
+* @date : 2020/3/27 13:17
 */
 public interface IFriendService {
     /**

@@ -16,6 +16,7 @@ import java.util.List;
 public interface UserMapper extends BaseMapper<User> {
     /**
      * 查询用户列表
+     *
      * @param page 分页参数
      * @param user 条件参数
      * @return 用户列表
@@ -24,8 +25,10 @@ public interface UserMapper extends BaseMapper<User> {
 
     /**
      * 根据用户名查询用户
+     *
      * @param username 用户名
      * @return 用户
      */
-    User selectByName(String username);
+    User selectByName(@Param("username") String username);
+
 }

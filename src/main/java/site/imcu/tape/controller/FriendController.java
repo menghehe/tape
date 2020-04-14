@@ -12,8 +12,8 @@ import site.imcu.tape.security.jwt.TokenProvider;
 import site.imcu.tape.service.impl.FriendServiceImpl;
 
 /**
- * @author: MengHe
- * @date: 2020/3/28 16:08
+ * @author : MengHe
+ * @date : 2020/3/28 16:08
  */
 @RequestMapping("/api/friend")
 @RestController
@@ -46,20 +46,27 @@ public class FriendController {
     }
 
     @PostMapping("/follower")
-    public ResponseData getFollower(@RequestBody User user){
-        Page<Friend> page = new Page<>();
-        BeanUtils.copyProperties(user, page);
+    public ResponseData getFollower(@RequestBody Friend friend){
+        Page<Friend> pageParam = getPageParam(friend);
         Long id = tokenProvider.getCurrentUser().getId();
-        IPage<User> follower = friendService.getFollower(page, id);
+        IPage<User> follower = friendService.getFollower(pageParam, id);
         return ResponseData.builder().code(1).data(follower).build();
     }
 
     @PostMapping("/following")
-    public ResponseData getFollowing(@RequestBody User user){
-        Page<Friend> page = new Page<>();
-        BeanUtils.copyProperties(user, page);
+    public ResponseData getFollowing(@RequestBody Friend friend){
+        Page<Friend> pageParam = getPageParam(friend);
         Long id = tokenProvider.getCurrentUser().getId();
-        IPage<User> following = friendService.getFollowing(page, id);
+        IPage<User> following = friendService.getFollowing(pageParam, id);
         return ResponseData.builder().code(1).data(following).build();
+    }
+
+    private Page<Friend> getPageParam(Friend user){
+        Page<Friend> page = new Page<>();
+        if (user.getSize()==null||user.getCurrent()==null){
+            return page;
+        }
+        BeanUtils.copyProperties(user, page);
+        return page;
     }
 }

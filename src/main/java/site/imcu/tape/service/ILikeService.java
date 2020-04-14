@@ -7,8 +7,8 @@ import site.imcu.tape.pojo.Like;
 import java.util.List;
 
 /**
- * @author: MengHe
- * @date: 2020/3/17 16:12
+ * @author : MengHe
+ * @date : 2020/3/17 16:12
  */
 public interface ILikeService {
 
@@ -26,12 +26,6 @@ public interface ILikeService {
      */
     Integer unLike(Like like);
 
-    /**
-     * 查询全部
-     * @return likeList
-     */
-    List<Like> getAll();
-
 
     /**
      * 分页查询
@@ -40,4 +34,11 @@ public interface ILikeService {
      * @return page
      */
     IPage<Like> getPage(Page<Like> page,Like like);
+
+
+    /**
+     * 查询全部,仅redis同步使用
+     * @return likeList
+     */
+    List<Like> getAll();
 }

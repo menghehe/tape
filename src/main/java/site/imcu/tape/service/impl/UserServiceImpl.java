@@ -66,6 +66,12 @@ public class UserServiceImpl implements IUserService {
 
     }
 
+    @Override
+    public User getUserById(Long id) {
+        User byId = userMapper.selectById(id);
+        User user = getUserByName(byId.getUsername());
+        return user;
+    }
 
     @Override
     public Integer addUser(User user) {

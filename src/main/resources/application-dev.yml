@@ -16,6 +16,11 @@ spring:
         min-idle: 0
     timeout: 5000ms
 
+#mybatis-plus配置控制台打印完整带参数SQL语句
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
 jPush:
   appKey: d5e56f164a1b0020a28a6458
   masterSecret: 094f385c6706a73074983bed

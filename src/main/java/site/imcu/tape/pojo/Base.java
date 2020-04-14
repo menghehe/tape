@@ -23,9 +23,9 @@ public class Base {
     private Integer deleted;
 
     @TableField(exist = false)
-    private Integer current;
+    private Long current;
     @TableField(exist = false)
-    private Integer size;
+    private Long size;
 
     @TableField(exist = false)
     private List<OrderItem> orders;

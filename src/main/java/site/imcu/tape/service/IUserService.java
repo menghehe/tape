@@ -17,6 +17,13 @@ public interface IUserService {
      */
     User getUserByName(String username);
 
+    /**
+     * 根据id查询
+     * @param id 用户id
+     * @return user
+     */
+    User getUserById(Long id);
+
     /**添加新用户
      * @param user 用户
      * @return 结果
