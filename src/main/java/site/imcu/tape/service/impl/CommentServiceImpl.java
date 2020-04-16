@@ -46,6 +46,13 @@ public class CommentServiceImpl implements ICommentService {
         }else {
             redisUtil.append(key,String.valueOf(1));
         }
+
+        Double score = redisUtil.zScore(redisKey.clipHeat(), comment.getClipId().toString());
+        if (score==null){
+            redisUtil.zAdd(redisKey.clipHeat(), comment.getClipId().toString(), 2);
+        }else {
+            redisUtil.zAdd(redisKey.clipHeat(), comment.getClipId().toString(),score+2);
+        }
         notifyComment(comment);
         return 1;
     }

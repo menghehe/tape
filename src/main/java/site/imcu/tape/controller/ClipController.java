@@ -24,6 +24,7 @@ import site.imcu.tape.service.impl.ClipServiceImpl;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author : MengHe
@@ -81,6 +82,12 @@ public class ClipController {
         Page<Clip> pageParam = getPageParam(clip);
         IPage<Clip> clipPage = clipService.getClipPage(pageParam, clip,tokenProvider.getCurrentUser());
         return ResponseData.builder().code(1).data(clipPage).build();
+    }
+
+    @GetMapping("/hot")
+    public ResponseData hotClip(){
+        List<Clip> clipList = clipService.hotClip(tokenProvider.getCurrentUser());
+        return ResponseData.builder().code(1).data(clipList).build();
     }
 
     @PostMapping("/list-admin")

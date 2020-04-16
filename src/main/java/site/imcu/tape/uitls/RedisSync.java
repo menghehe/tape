@@ -40,6 +40,13 @@ public class RedisSync {
                 redisUtil.set(userLikedClipKey, "true");
                 String clipLikedCount = redisKey.clipLikedCount(like.getTargetId());
                 redisUtil.incrBy(clipLikedCount, 1);
+
+                Double score = redisUtil.zScore(redisKey.clipHeat(), like.getTargetId().toString());
+                if (score==null){
+                    redisUtil.zAdd(redisKey.clipHeat(), like.getTargetId().toString(), 1);
+                }else {
+                    redisUtil.zAdd(redisKey.clipHeat(), like.getTargetId().toString(),score+1 );
+                }
             }
             if(like.getLikeType()==2){
                 String userLikedComment = redisKey.userLikedComment(like.getFromId(), like.getTargetId());
@@ -53,6 +60,12 @@ public class RedisSync {
         for (Comment comment : commentList) {
             String clipCommentCount = redisKey.clipCommentCount(comment.getClipId());
             redisUtil.incrBy(clipCommentCount, 1);
+            Double score = redisUtil.zScore(redisKey.clipHeat(), comment.getClipId().toString());
+            if (score==null){
+                redisUtil.zAdd(redisKey.clipHeat(), comment.getClipId().toString(), 2);
+            }else {
+                redisUtil.zAdd(redisKey.clipHeat(), comment.getClipId().toString(),score+2);
+            }
         }
 
 

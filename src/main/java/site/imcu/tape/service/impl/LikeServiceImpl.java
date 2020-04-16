@@ -124,6 +124,15 @@ public class LikeServiceImpl implements ILikeService {
             redisUtil.append(likeCountKey, String.valueOf(1));
         }
 
+        if (like.getLikeType()==1){
+            Double score = redisUtil.zScore(redisKey.clipHeat(), like.getTargetId().toString());
+            if (score==null){
+                redisUtil.zAdd(redisKey.clipHeat(), like.getTargetId().toString(), 1);
+            }else {
+                redisUtil.zAdd(redisKey.clipHeat(), like.getTargetId().toString(),score+1 );
+            }
+        }
+
         //redis存入user_like_clip 标志
         String likedKey = like.getLikeType()==1?redisKey.userLikedClip(like.getFromId(),like.getTargetId()):redisKey.userLikedComment(like.getFromId(),like.getTargetId());
         redisUtil.append(likedKey,"true");

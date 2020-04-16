@@ -19,6 +19,11 @@ import site.imcu.tape.uitls.RedisUtil;
 import site.imcu.tape.uitls.shell.LocalCommandExecutor;
 import site.imcu.tape.uitls.shell.LocalCommandExecutorImpl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
 /**
  * @author: MengHe
  * @date: 2020/2/23 15:35
@@ -43,6 +48,8 @@ public class ClipServiceImpl implements IClipService {
     ClipMapper clipMapper;
     @Autowired
     RedisUtil redisUtil;
+    @Autowired
+    UserServiceImpl userService;
     @Override
     public Integer createClip(Clip clip) {
         LocalCommandExecutor commandExecutor = new LocalCommandExecutorImpl();
@@ -51,12 +58,15 @@ public class ClipServiceImpl implements IClipService {
         String hls = hlsPath + clip.getClipPath();
 
         String sliceCommand = StrUtil.format("ffmpeg -i {} -vcodec copy -acodec copy -hls_list_size 0 -vbsf h264_mp4toannexb {}", sourceFile, hls);
-        commandExecutor.executeCommand(sliceCommand, 5000);
+        log.info("执行前时间{}",new Date());
+        commandExecutor.executeCommand(sliceCommand, 50000);
+        log.info("执行前时间{}",new Date());
         if (StringUtils.isEmpty(clip.getCoverTime())){
             clip.setCoverTime("00:00:01.000");
         }
         String coverCommand = StrUtil.format("ffmpeg -i {} -ss {} -vframes 1 {}", sourceFile,clip.getCoverTime(), cover);
-        commandExecutor.executeCommand(coverCommand, 5000);
+        commandExecutor.executeCommand(coverCommand, 50000);
+        log.info("执行前时间{}",new Date());
 
         return clipMapper.insert(clip);
     }
@@ -65,6 +75,28 @@ public class ClipServiceImpl implements IClipService {
     public IPage<Clip> getClipPage(Page<Clip> page, Clip clip, User currentUser) {
         IPage<Clip> clipPage = clipMapper.selectClipPage(page, clip);
         return fillClipPage(clipPage,currentUser);
+    }
+
+    @Override
+    public List<Clip> hotClip(User currentUser) {
+        Set<String> stringSet = redisUtil.zReverseRange(redisKey.clipHeat(), 0, 10);
+        List<Long> idList = new ArrayList<>();
+        for (String s : stringSet) {
+            idList.add(Long.valueOf(s));
+        }
+        List<Clip> clipList = clipMapper.selectBatchIds(idList);
+        fillClipList(clipList, currentUser);
+        List<Clip> resultList = new ArrayList<>();
+        for (Long aLong : idList) {
+            for (Clip clip : clipList) {
+                if (clip.getId().equals(aLong)){
+                    User userById = userService.getUserById(clip.getCreator());
+                    clip.setUser(userById);
+                    resultList.add(clip);
+                }
+            }
+        }
+        return resultList;
     }
 
     @Override
@@ -83,6 +115,12 @@ public class ClipServiceImpl implements IClipService {
     private Clip fillClip(Clip clip, User user){
         fillData(clip, user);
         return clip;
+    }
+
+    private void fillClipList(List<Clip> clipList,User currentUser){
+        for (Clip clip : clipList) {
+            fillData(clip,currentUser);
+        }
     }
 
     private void fillData(Clip clip, User user) {

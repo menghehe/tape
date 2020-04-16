@@ -52,4 +52,12 @@ public interface IClipService {
      */
     Integer updateClip(Clip clip);
 
+
+    /**
+     * 获取热门clip
+     * @param currentUser 登录用户
+     * @return clipList
+     */
+    List<Clip> hotClip(User currentUser);
+
 }

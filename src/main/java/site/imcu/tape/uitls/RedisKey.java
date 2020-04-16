@@ -29,4 +29,6 @@ public class RedisKey {
     public String commentLikedCount(Long commentId){
         return StrUtil.format("comment:{}:likedCount", commentId);
     }
+
+    public String clipHeat(){return "clipHeat";}
 }
