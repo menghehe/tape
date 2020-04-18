@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ResponseData authenticationException(AccessDeniedException e){
         log.info(e.getMessage());
-        return ResponseData.builder().code(-1).message(e.getMessage()).build();
+        return ResponseData.builder().code(-10).message(e.getMessage()).build();
     }
 
 

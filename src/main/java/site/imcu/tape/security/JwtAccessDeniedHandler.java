@@ -18,10 +18,9 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
    @Override
    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
-//      ResponseData responseData = ResponseData.builder().message(accessDeniedException.getMessage()).code(-1).build();
-//      response.setContentType("application/json;charset=UTF-8");
-//      response.getWriter().write(JSONObject.toJSONString(responseData));
-      response.sendError(HttpServletResponse.SC_FORBIDDEN, accessDeniedException.getMessage());
+      ResponseData responseData = ResponseData.builder().message(accessDeniedException.getMessage()).code(-10).build();
+      response.getWriter().write(JSONObject.toJSONString(responseData));
+      response.setContentType("application/json;charset=UTF-8");
 
    }
 }
