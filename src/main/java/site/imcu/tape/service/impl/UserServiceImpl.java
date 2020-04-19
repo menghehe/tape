@@ -1,12 +1,11 @@
 package site.imcu.tape.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import site.imcu.tape.mapper.AuthorityMapper;
 import site.imcu.tape.mapper.UserMapper;
@@ -36,6 +35,8 @@ public class UserServiceImpl implements IUserService {
     ClipServiceImpl clipService;
     @Autowired
     TokenProvider tokenProvider;
+    @Autowired
+    PasswordEncoder passwordEncoder;
     @Override
     public User getUserByName(String username) {
         User user = userMapper.selectByName(username);
@@ -74,14 +75,15 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Integer addUser(User user) {
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        String encode = bCryptPasswordEncoder.encode(user.getPassword());
+    public Integer createUser(User user) {
+        String encode = passwordEncoder.encode(user.getPassword());
         user.setPassword(encode);
         Date now = new Date();
         user.setCreateTime(now);
         user.setCreateMan((long) 0);
         user.setAvatar("default.jpg");
+        user.setLocked(0);
+        user.setDeleted(0);
         int result = userMapper.insert(user);
         if (result==1){
             Authority authority = new Authority();

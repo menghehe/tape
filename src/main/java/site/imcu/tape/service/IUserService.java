@@ -28,7 +28,7 @@ public interface IUserService {
      * @param user 用户
      * @return 结果
      */
-    Integer addUser(User user);
+    Integer createUser(User user);
 
     /**
      * 更新用户信息

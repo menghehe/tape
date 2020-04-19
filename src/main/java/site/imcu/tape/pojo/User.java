@@ -32,6 +32,7 @@ public class User extends Base implements UserDetails {
     private String nickname;
     private String avatar;
     private String signature;
+    private Integer locked;
     @TableField(exist = false)
     private Set<Authority> authorities;
 
@@ -63,7 +64,7 @@ public class User extends Base implements UserDetails {
     @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
-        return this.getDeleted().equals(0);
+        return this.getLocked().equals(0);
     }
 
     @Override

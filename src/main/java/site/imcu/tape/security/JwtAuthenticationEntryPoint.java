@@ -17,9 +17,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
    public void commence(HttpServletRequest request,
                         HttpServletResponse response,
                         AuthenticationException authException) throws IOException {
-      ResponseData responseData = ResponseData.builder().message(authException.getMessage()).code(-10).build();
-      response.getWriter().write(JSONObject.toJSONString(responseData));
+      ResponseData responseData = ResponseData.builder().message("token已失效,请重新登录").code(-10).build();
       response.setContentType("application/json;charset=UTF-8");
+      response.getWriter().write(JSONObject.toJSONString(responseData));
    }
 
 

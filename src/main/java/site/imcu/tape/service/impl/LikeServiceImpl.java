@@ -117,7 +117,8 @@ public class LikeServiceImpl implements ILikeService {
 
     private void likeMark(Like like){
         //clip likeCount++
-        String likeCountKey = like.getLikeType()==1?redisKey.clipLikedCount(like.getTargetId()):redisKey.commentLikedCount(like.getTargetId());
+        String likeCountKey = like.getLikeType()==1?redisKey.clipLikedCount(like.getTargetId()):
+                redisKey.commentLikedCount(like.getTargetId());
         if (redisUtil.hasKey(likeCountKey)){
             redisUtil.incrBy(likeCountKey,1);
         }else {
@@ -134,7 +135,8 @@ public class LikeServiceImpl implements ILikeService {
         }
 
         //redis存入user_like_clip 标志
-        String likedKey = like.getLikeType()==1?redisKey.userLikedClip(like.getFromId(),like.getTargetId()):redisKey.userLikedComment(like.getFromId(),like.getTargetId());
+        String likedKey = like.getLikeType()==1?redisKey.userLikedClip(like.getFromId(),like.getTargetId()):
+                redisKey.userLikedComment(like.getFromId(),like.getTargetId());
         redisUtil.append(likedKey,"true");
     }
 

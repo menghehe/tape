@@ -54,13 +54,10 @@ public class TokenProvider {
       String authorities = authentication.getAuthorities().stream()
          .map(GrantedAuthority::getAuthority)
          .collect(Collectors.joining(","));
-
       long now = (new Date()).getTime();
       Date validity;
       validity = new Date(now + this.tokenValidityInMilliseconds);
-
       site.imcu.tape.pojo.User user = userService.getUserByName(authentication.getName());
-
       return JWT.create()
               .withClaim("userId", user.getId())
               .withClaim("username", user.getUsername())

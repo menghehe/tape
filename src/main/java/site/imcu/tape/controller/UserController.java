@@ -1,6 +1,5 @@
 package site.imcu.tape.controller;
 
-import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -57,7 +56,7 @@ public class UserController {
         if (userByName!=null){
             return ResponseData.builder().code(-1).message("用户名已存在").build();
         }
-        Integer result = userService.addUser(user);
+        Integer result = userService.createUser(user);
         return  ResponseData.builder().code(result==1?1:-1).build();
     }
 
@@ -123,11 +122,11 @@ public class UserController {
     public ResponseData lock(@RequestBody User user){
         User userById = userService.getUserById(user.getId());
         for (GrantedAuthority authority : userById.getAuthorities()) {
-            if (authority.getAuthority().equals("ROLE_ADMIN")){
+            if ("ROLE_ADMIN".equals(authority.getAuthority())){
                 return ResponseData.builder().code(-1).message("无法封禁管理员").build();
             }
         }
-        user.setDeleted(1);
+        user.setLocked(1);
         user.setUpdateMan(tokenProvider.getCurrentUser().getId());
         Integer result = userService.updateUserById(user);
         return ResponseData.builder().code(result.equals(1)?1:-1).build();
@@ -135,7 +134,7 @@ public class UserController {
     @PostMapping("/unlock")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseData unlock(@RequestBody User user){
-        user.setDeleted(0);
+        user.setLocked(0);
         user.setUpdateMan(tokenProvider.getCurrentUser().getId());
         Integer result = userService.updateUserById(user);
         return ResponseData.builder().code(result.equals(1)?1:-1).build();
