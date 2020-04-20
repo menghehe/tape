@@ -66,8 +66,7 @@ public class UserController {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = tokenProvider.createToken(authentication);
-        JwtToken jwtToken = new JwtToken();
-        jwtToken.setToken(token);
+        JwtToken jwtToken = new JwtToken(token);
         return ResponseData.builder().data(jwtToken).code(1).message("登录成功").build();
     }
 

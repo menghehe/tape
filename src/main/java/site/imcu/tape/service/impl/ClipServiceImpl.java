@@ -19,10 +19,7 @@ import site.imcu.tape.uitls.RedisUtil;
 import site.imcu.tape.uitls.shell.LocalCommandExecutor;
 import site.imcu.tape.uitls.shell.LocalCommandExecutorImpl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author: MengHe
@@ -56,18 +53,13 @@ public class ClipServiceImpl implements IClipService {
         String sourceFile = sourceFilePath + clip.getSourceFile();
         String cover = coverPath + clip.getCoverPath();
         String hls = hlsPath + clip.getClipPath();
-
         String sliceCommand = StrUtil.format("ffmpeg -i {} -vcodec copy -acodec copy -hls_list_size 0 -vbsf h264_mp4toannexb {}", sourceFile, hls);
-        log.info("执行前时间{}",new Date());
         commandExecutor.executeCommand(sliceCommand, 50000);
-        log.info("执行前时间{}",new Date());
         if (StringUtils.isEmpty(clip.getCoverTime())){
             clip.setCoverTime("00:00:01.000");
         }
         String coverCommand = StrUtil.format("ffmpeg -i {} -ss {} -vframes 1 {}", sourceFile,clip.getCoverTime(), cover);
         commandExecutor.executeCommand(coverCommand, 50000);
-        log.info("执行前时间{}",new Date());
-
         return clipMapper.insert(clip);
     }
 
@@ -79,24 +71,17 @@ public class ClipServiceImpl implements IClipService {
 
     @Override
     public List<Clip> hotClip(User currentUser) {
-        Set<String> stringSet = redisUtil.zReverseRange(redisKey.clipHeat(), 0, 10);
-        List<Long> idList = new ArrayList<>();
-        for (String s : stringSet) {
-            idList.add(Long.valueOf(s));
+        Set<String> idSet = redisUtil.zReverseRange(redisKey.clipHeat(), 0, 10);
+        Map<Long,Integer> orderMap = new HashMap<>();
+        int order = 0;
+        for (String s : idSet) {
+            orderMap.put(Long.valueOf(s), order);
+            order++;
         }
-        List<Clip> clipList = clipMapper.selectBatchIds(idList);
+        List<Clip> clipList = clipMapper.selectBatchIds(orderMap.keySet());
         fillClipList(clipList, currentUser);
-        List<Clip> resultList = new ArrayList<>();
-        for (Long aLong : idList) {
-            for (Clip clip : clipList) {
-                if (clip.getId().equals(aLong)){
-                    User userById = userService.getUserById(clip.getCreator());
-                    clip.setUser(userById);
-                    resultList.add(clip);
-                }
-            }
-        }
-        return resultList;
+        clipList.sort((o1, o2) -> orderMap.get(o1.getId())<orderMap.get(o2.getId())?-1:0);
+        return clipList;
     }
 
     @Override

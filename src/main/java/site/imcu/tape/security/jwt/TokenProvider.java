@@ -61,15 +61,16 @@ public class TokenProvider {
       return JWT.create()
               .withClaim("userId", user.getId())
               .withClaim("username", user.getUsername())
-              .withClaim(AUTHORITIES_KEY, authorities)
+              .withClaim(AUTHORITIES_KEY,authorities)
               .withExpiresAt(validity)
               .sign(Algorithm.HMAC256(base64Secret));
    }
 
    public Authentication getAuthentication(String token) {
       Map<String, Claim> claims = JWT.require(Algorithm.HMAC256(base64Secret)).build().verify(token).getClaims();
+      String[] split = claims.get(AUTHORITIES_KEY).asString().split(",");
       Collection<? extends GrantedAuthority> authorities =
-         Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+         Arrays.stream(split)
             .map(SimpleGrantedAuthority::new)
             .collect(Collectors.toList());
       User principal = new User(claims.get("username").asString(), "", authorities);

@@ -32,6 +32,7 @@ public class User extends Base implements UserDetails {
     private String nickname;
     private String avatar;
     private String signature;
+    @TableField(value = "is_locked")
     private Integer locked;
     @TableField(exist = false)
     private Set<Authority> authorities;
