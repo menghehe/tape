@@ -31,4 +31,5 @@ public class SubTable {
     private String 摘要;
     private String 银行账号;
     private String 库存现金币别;
+    private String 内部标识;
 }

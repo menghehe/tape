@@ -15,7 +15,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import site.imcu.tape.pojo.User;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: MengHe
@@ -36,14 +38,14 @@ public class UserMapperTest {
         System.out.println(JSONObject.toJSON(users));
     }
 
-    @Test
-    public void read(){
-
-        List<SubTable> subTableList = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
-            ExcelReader reader = ExcelUtil.getReader("C:\\Users\\root\\Desktop\\2019年ns样式凭证.xlsx",i);
-            subTableList.addAll(reader.readAll(SubTable.class));
-        }
+//    @Test
+//    public void read(){
+//
+//        List<SubTable> subTableList = new ArrayList<>();
+//        for (int i = 0; i < 7; i++) {
+//            ExcelReader reader = ExcelUtil.getReader("C:\\Users\\root\\Desktop\\2019年ns样式凭证.xlsx",i);
+//            subTableList.addAll(reader.readAll(SubTable.class));
+//        }
 //
 //        int i = 0;
 //        int part = 0;
@@ -60,13 +62,50 @@ public class UserMapperTest {
 //                tmpList.clear();
 //            }
 //        }
+//
+//        BigExcelWriter writer= ExcelUtil.getBigWriter(StrUtil.format("e:/subresult.xlsx"));
+//        writer.write(subTableList);
+//        writer.close();
+//
+//
+//    }
 
-        BigExcelWriter writer= ExcelUtil.getBigWriter(StrUtil.format("e:/subresult.xlsx"));
-        writer.write(subTableList);
-        writer.close();
 
+    @Test
+    public void read(){
+        ExcelReader reader = ExcelUtil.getReader("e:/subresult.xlsx");
 
+        int start = 1;
+        int end = 25000;
+        for (int i = 0; i < 7; i++) {
+            List<SubTable> subTableList = reader.read(start, end, SubTable.class);
+            BigExcelWriter writer= ExcelUtil.getBigWriter(StrUtil.format("e:/sub_result_part{}.xlsx",i));
+            writer.write(subTableList);
+            writer.close();
+            start+=25000;
+            end+=25000;
+        }
 
-
-    }
-}
+//        int i = 0;
+//        int part = 0;
+//        System.out.println(new Date());
+//        List<SubTable> tmpList = new ArrayList<>();
+//        for (SubTable map : subTables) {
+//            i++;
+//            tmpList.add(map);
+//            if (i==25000){
+//                BigExcelWriter writer= ExcelUtil.getBigWriter(StrUtil.format("e:/sub_result_part{}.xlsx", part));
+//                writer.write(tmpList);
+//                writer.close();
+//                i=0;
+//                part++;
+//                tmpList.clear();
+//                writer.close();
+//            }
+//        }
+//
+//        BigExcelWriter writer= ExcelUtil.getBigWriter(StrUtil.format("e:/sub_result_part{}.xlsx",part));
+//        writer.write(tmpList);
+//        writer.close();
+//    }
+}}

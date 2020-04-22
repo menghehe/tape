@@ -19,12 +19,12 @@ import site.imcu.tape.pojo.ResponseData;
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-//    @ExceptionHandler(value = Exception.class)
-//    @ResponseBody
-//    public ResponseData exceptionHandler(Exception e){
-//        log.info(e.getMessage());
-//        return ResponseData.builder().message(e.getMessage()).code(-1).build();
-//    }
+    @ExceptionHandler(value = Exception.class)
+    @ResponseBody
+    public ResponseData exceptionHandler(Exception e){
+        log.info(e.getMessage());
+        return ResponseData.builder().message(e.getMessage()).code(-1).build();
+    }
 
 
     @ExceptionHandler(value = BindException.class)
