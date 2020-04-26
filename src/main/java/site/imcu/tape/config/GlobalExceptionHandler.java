@@ -22,6 +22,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
     public ResponseData exceptionHandler(Exception e){
+        e.printStackTrace();
         log.info(e.getMessage());
         return ResponseData.builder().message(e.getMessage()).code(-1).build();
     }
@@ -48,12 +49,6 @@ public class GlobalExceptionHandler {
         return ResponseData.builder().code(-1).message(e.getMessage()).build();
     }
 
-//    @ExceptionHandler(value = AccessDeniedException.class)
-//    @ResponseBody
-//    public ResponseData authenticationException(AccessDeniedException e){
-//        log.info(e.getMessage());
-//        return ResponseData.builder().code(-10).message(e.getMessage()).build();
-//    }
 
 
 

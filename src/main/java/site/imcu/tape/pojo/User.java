@@ -65,7 +65,7 @@ public class User extends Base implements UserDetails {
     @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
-        return this.getLocked().equals(0);
+        return Integer.valueOf(0).equals(this.locked);
     }
 
     @Override
