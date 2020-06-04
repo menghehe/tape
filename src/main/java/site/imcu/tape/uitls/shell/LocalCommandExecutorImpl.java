@@ -1,30 +1,27 @@
 package site.imcu.tape.uitls.shell; /**
 * LocalCommandExecutorImpl.java
 */
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.time.LocalDateTime;
+import java.util.concurrent.*;
 
 /**
  * @author mengh
  */
+@Slf4j
 public class LocalCommandExecutorImpl implements LocalCommandExecutor {
 
-    static final Logger logger = LoggerFactory.getLogger(LocalCommandExecutorImpl.class);
-
-    static ExecutorService pool = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 3L, TimeUnit.SECONDS,
-            new SynchronousQueue<Runnable>());
+    static ExecutorService pool = new ThreadPoolExecutor(1, 5, 3L, TimeUnit.SECONDS,
+            new SynchronousQueue<>(), r -> {
+                Thread thread = new Thread(r);
+                thread.setName("system-interface-call-" + LocalDateTime.now());
+                return thread;
+            });
 
     @Override
     public ExecuteResult executeCommand(String command, long timeout) {
@@ -35,7 +32,7 @@ public class LocalCommandExecutorImpl implements LocalCommandExecutor {
         StreamGobbler errorGobbler = null;
         Future<Integer> executeFuture = null;
         try {
-            logger.info(command.toString());
+            log.info(command);
             process = Runtime.getRuntime().exec(command);
             final Process p = process;
 
@@ -51,12 +48,9 @@ public class LocalCommandExecutorImpl implements LocalCommandExecutor {
             errorGobbler.start();
 
             // create a Callable for the command's Process which can be called by an Executor
-            Callable<Integer> call = new Callable<Integer>() {
-                @Override
-                public Integer call() throws Exception {
-                    p.waitFor();
-                    return p.exitValue();
-                }
+            Callable<Integer> call = () -> {
+                p.waitFor();
+                return p.exitValue();
             };
 
             // submit the command's call and get the result from a
@@ -66,19 +60,19 @@ public class LocalCommandExecutorImpl implements LocalCommandExecutor {
 
         } catch (IOException ex) {
             String errorMessage = "The command [" + command + "] execute failed.";
-            logger.error(errorMessage, ex);
+            log.error(errorMessage, ex);
             return new ExecuteResult(-1, null);
         } catch (TimeoutException ex) {
             String errorMessage = "The command [" + command + "] timed out.";
-            logger.error(errorMessage, ex);
+            log.error(errorMessage, ex);
             return new ExecuteResult(-1, null);
         } catch (ExecutionException ex) {
             String errorMessage = "The command [" + command + "] did not complete due to an execution error.";
-            logger.error(errorMessage, ex);
+            log.error(errorMessage, ex);
             return new ExecuteResult(-1, null);
         } catch (InterruptedException ex) {
             String errorMessage = "The command [" + command + "] did not complete due to an interrupted error.";
-            logger.error(errorMessage, ex);
+            log.error(errorMessage, ex);
             return new ExecuteResult(-1, null);
         } finally {
             if (executeFuture != null) {
@@ -112,7 +106,7 @@ public class LocalCommandExecutorImpl implements LocalCommandExecutor {
                 c.close();
             }
         } catch (IOException e) {
-            logger.error("exception", e);
+            log.error("exception", e);
         }
     }
 }

@@ -10,7 +10,6 @@ import lombok.Data;
 @Builder
 @Data
 public class ResponseData {
-
     private Integer code;
     private String message;
     public Object data;

@@ -32,11 +32,7 @@ public class CommentController {
         Long currentUserId = tokenProvider.getCurrentUser().getId();
         comment.setFromId(currentUserId);
         Integer result = commentService.addComment(comment);
-        if (result==1){
-            return ResponseData.builder().code(1).build();
-        }else {
-            return ResponseData.builder().code(-1).build();
-        }
+        return ResponseData.builder().code(result==1?1:-1).build();
     }
 
     @PostMapping("/list")

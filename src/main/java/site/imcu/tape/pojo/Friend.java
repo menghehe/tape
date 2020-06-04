@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Objects;
+
 /**
 * @author: MengHe
 * @date: 2020/3/27 13:17
@@ -26,4 +28,5 @@ public class Friend extends Base {
     * 被关注
     */
     private Long following;
+
 }
