@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import site.imcu.tape.mapper.FriendMapper;
 import site.imcu.tape.pojo.Friend;
 import site.imcu.tape.pojo.User;
@@ -23,6 +25,7 @@ public class FriendServiceImpl implements IFriendService {
     private FriendMapper friendMapper;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Integer addFriend(Friend friend) {
         QueryWrapper<Friend> queryWrapper = new QueryWrapper<Friend>().eq("following", friend.getFollowing()).eq("follower", friend.getFollower());
         Friend existed = friendMapper.selectOne(queryWrapper);
@@ -43,6 +46,7 @@ public class FriendServiceImpl implements IFriendService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Integer unFriend(Friend friend) {
         QueryWrapper<Friend> friendQueryWrapper = new QueryWrapper<Friend>().eq("following", friend.getFollowing()).eq("follower", friend.getFollower()).eq("is_deleted", 0);
         Friend existed = friendMapper.selectOne(friendQueryWrapper);

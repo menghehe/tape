@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import site.imcu.tape.mapper.ClipMapper;
 import site.imcu.tape.pojo.Clip;
@@ -48,6 +50,7 @@ public class ClipServiceImpl implements IClipService {
     @Autowired
     UserServiceImpl userService;
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Integer createClip(Clip clip) {
         LocalCommandExecutor commandExecutor = new LocalCommandExecutorImpl();
         String sourceFile = sourceFilePath + clip.getSourceFile();
@@ -132,6 +135,7 @@ public class ClipServiceImpl implements IClipService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Integer updateClip(Clip clip) {
         return clipMapper.updateById(clip);
     }

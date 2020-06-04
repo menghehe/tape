@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import site.imcu.tape.mapper.CommentMapper;
 import site.imcu.tape.pojo.Comment;
 import site.imcu.tape.pojo.User;
@@ -32,6 +34,7 @@ public class CommentServiceImpl implements ICommentService {
     @Autowired
     RedisKey redisKey;
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Integer addComment(Comment comment) {
         comment.setCreateMan(comment.getFromId());
         comment.setCreateTime(new Date());

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import site.imcu.tape.mapper.AuthorityMapper;
 import site.imcu.tape.mapper.UserMapper;
 import site.imcu.tape.pojo.Authority;
@@ -74,6 +76,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Integer createUser(User user) {
         String encode = passwordEncoder.encode(user.getPassword());
         user.setPassword(encode);
@@ -94,6 +97,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Integer updateUserById(User user) {
         user.setUpdateTime(new Date());
         return userMapper.updateById(user);

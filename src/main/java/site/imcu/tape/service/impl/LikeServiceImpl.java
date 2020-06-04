@@ -51,6 +51,7 @@ public class LikeServiceImpl implements ILikeService {
         typeMap.put(commentType,"comment");
     }
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Integer addLike(Like like) {
         if (verifyLike(like)) {
             return 0;
@@ -86,6 +87,7 @@ public class LikeServiceImpl implements ILikeService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Integer unLike(Like like) {
         Like existed = likeMapper.selectOne(new QueryWrapper<Like>().eq("from_id", like.getFromId()).eq("like_type", like.getLikeType()).eq("target_id", like.getTargetId()));
         if (existed==null){
