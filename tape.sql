@@ -1,109 +1,167 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : root
+ Source Server         : 本地docker
  Source Server Type    : MySQL
- Source Server Version : 80017
+ Source Server Version : 80021
  Source Host           : localhost:3306
  Source Schema         : tape
 
  Target Server Type    : MySQL
- Target Server Version : 80017
+ Target Server Version : 80021
  File Encoding         : 65001
 
- Date: 08/03/2020 20:24:05
+ Date: 14/10/2020 23:16:40
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
--- Table structure for authority
+-- Table structure for tape_authority
 -- ----------------------------
-DROP TABLE IF EXISTS `authority`;
-CREATE TABLE `authority`  (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `authority` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+DROP TABLE IF EXISTS `tape_authority`;
+CREATE TABLE `tape_authority`  (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT '唯一ID',
+  `authority` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '权限名',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of authority
+-- Records of tape_authority
 -- ----------------------------
-INSERT INTO `authority` VALUES (1, 'ROLE_USER');
-INSERT INTO `authority` VALUES (2, 'ROLE_ADMIN');
-INSERT INTO `authority` VALUES (3, 'ROLE_REVIEWER');
+INSERT INTO `tape_authority` VALUES (1, 'ROLE_USER');
+INSERT INTO `tape_authority` VALUES (2, 'ROLE_ADMIN');
 
 -- ----------------------------
--- Table structure for clip
+-- Table structure for tape_clip
 -- ----------------------------
-DROP TABLE IF EXISTS `clip`;
-CREATE TABLE `clip`  (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `source_file` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `clip_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `thumbnail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `creator` int(255) NOT NULL,
-  `is_transcoded` int(255) NULL DEFAULT NULL,
-  `is_del` int(255) NULL DEFAULT NULL,
-  `update_time` datetime(0) NULL DEFAULT NULL,
-  `update_man` int(11) NULL DEFAULT NULL,
-  `create_time` datetime(0) NULL DEFAULT NULL,
-  `create_man` int(11) NULL DEFAULT NULL,
+DROP TABLE IF EXISTS `tape_clip`;
+CREATE TABLE `tape_clip`  (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '唯一ID',
+  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '标题',
+  `source_file` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '上传源文件存放路径',
+  `clip_path` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '视频存放路径',
+  `cover_path` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '封面存放路径',
+  `creator` bigint NULL DEFAULT NULL COMMENT '创建人ID',
+  `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
+  `update_man` bigint NULL DEFAULT NULL COMMENT '更新人ID',
+  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `create_man` bigint NULL DEFAULT NULL COMMENT '创建人ID',
+  `is_deleted` int NULL DEFAULT NULL COMMENT '删除标志 0否，1是',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of clip
+-- Records of tape_clip
 -- ----------------------------
-INSERT INTO `clip` VALUES (1, 'frozen', '19a0d4fc6485435fa18a2e2c6eef3cf7.mp4', '19a0d4fc6485435fa18a2e2c6eef3cf7.m3u8', '19a0d4fc6485435fa18a2e2c6eef3cf7.png', 1, NULL, 0, NULL, NULL, '2020-03-02 19:14:02', 1);
-INSERT INTO `clip` VALUES (2, NULL, '58c80121794644cb928fd025650bcd6c.mp4', '58c80121794644cb928fd025650bcd6c.m3u8', '58c80121794644cb928fd025650bcd6c.png', 1, NULL, 0, NULL, NULL, '2020-03-02 19:15:58', 1);
-INSERT INTO `clip` VALUES (3, 'wtf', 'e6b3c982f5f24e8aa73a325b00688f8a.mp4', 'e6b3c982f5f24e8aa73a325b00688f8a.m3u8', 'e6b3c982f5f24e8aa73a325b00688f8a.png', 1, NULL, 0, NULL, NULL, '2020-03-05 15:55:04', 1);
 
 -- ----------------------------
--- Table structure for user
+-- Table structure for tape_comment
 -- ----------------------------
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user`  (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `nickname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `phone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `signature` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `update_time` datetime(0) NULL DEFAULT NULL,
-  `update_man` datetime(0) NULL DEFAULT NULL,
-  `create_time` datetime(0) NULL DEFAULT NULL,
-  `create_man` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+DROP TABLE IF EXISTS `tape_comment`;
+CREATE TABLE `tape_comment`  (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '唯一ID',
+  `text` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '评论内容',
+  `to_id` bigint NULL DEFAULT NULL COMMENT '被评论人ID',
+  `from_id` bigint NULL DEFAULT NULL COMMENT '评论人ID',
+  `clip_id` bigint NULL DEFAULT NULL COMMENT '视频ID',
+  `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
+  `update_man` bigint NULL DEFAULT NULL COMMENT '更新人ID',
+  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `create_man` bigint NULL DEFAULT NULL COMMENT '创建人ID',
+  `is_deleted` int NULL DEFAULT NULL COMMENT '删除标志 0否，1是',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of user
+-- Records of tape_comment
 -- ----------------------------
-INSERT INTO `user` VALUES (1, 'menghe', '$2a$10$Q.k8xSlXr4etPkOeh9y5nOVtl/saUp3nXBp0AfvUaRnZqYnLREE9.', NULL, NULL, NULL, 'default.jpg', NULL, NULL, NULL, '2020-02-22 13:43:22', '0');
-INSERT INTO `user` VALUES (2, 'event', '$2a$10$oJmLGxtymlMwVGViWtU4hey7H.Pt2rXizhsrdU3Jwxbma64KbGRV2', NULL, NULL, NULL, 'default.jpg', NULL, NULL, NULL, '2020-02-22 14:11:50', '0');
-INSERT INTO `user` VALUES (3, 'menghehe', '$2a$10$/JlbahMKZMJQ5/LXEylwb.5MCrYGDXMvX./YINwKOU0w0MFTtVUMq', NULL, NULL, NULL, 'default.jpg', NULL, NULL, NULL, '2020-03-04 13:44:52', '0');
 
 -- ----------------------------
--- Table structure for user_authority
+-- Table structure for tape_friend
 -- ----------------------------
-DROP TABLE IF EXISTS `user_authority`;
-CREATE TABLE `user_authority`  (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user` int(11) NOT NULL,
-  `authority` int(11) NULL DEFAULT NULL,
+DROP TABLE IF EXISTS `tape_friend`;
+CREATE TABLE `tape_friend`  (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '唯一ID',
+  `follower` bigint NULL DEFAULT NULL COMMENT '粉丝ID',
+  `following` bigint NULL DEFAULT NULL COMMENT '被关注ID',
+  `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
+  `update_man` bigint NULL DEFAULT NULL COMMENT '更新人ID',
+  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `create_man` binary(1) NULL DEFAULT NULL COMMENT '创建人ID',
+  `is_deleted` int NULL DEFAULT NULL COMMENT '删除标志 0否，1是',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of user_authority
+-- Records of tape_friend
 -- ----------------------------
-INSERT INTO `user_authority` VALUES (1, 1, 1);
-INSERT INTO `user_authority` VALUES (2, 2, 1);
-INSERT INTO `user_authority` VALUES (3, 3, 1);
+
+-- ----------------------------
+-- Table structure for tape_like
+-- ----------------------------
+DROP TABLE IF EXISTS `tape_like`;
+CREATE TABLE `tape_like`  (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '唯一ID',
+  `like_type` int NULL DEFAULT NULL COMMENT '点赞类型 1视频，2评论',
+  `from_id` bigint NULL DEFAULT NULL COMMENT '点赞人ID',
+  `to_id` bigint NULL DEFAULT NULL COMMENT '被点赞人ID',
+  `target_id` bigint NULL DEFAULT NULL COMMENT '视频或评论ID',
+  `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
+  `update_man` bigint NULL DEFAULT NULL COMMENT '更新人ID',
+  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `create_man` bigint NULL DEFAULT NULL COMMENT '创建人ID',
+  `is_deleted` int NULL DEFAULT NULL COMMENT '删除标志 0否，1是',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of tape_like
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for tape_user
+-- ----------------------------
+DROP TABLE IF EXISTS `tape_user`;
+CREATE TABLE `tape_user`  (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '唯一ID',
+  `username` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '用户名',
+  `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '密码',
+  `nickname` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '昵称',
+  `avatar` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '头像存放路径',
+  `signature` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '签名',
+  `is_locked` tinyint NULL DEFAULT NULL COMMENT '是否封禁 1 是 0否',
+  `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
+  `update_man` bigint NULL DEFAULT NULL COMMENT '更新人ID',
+  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `create_man` bigint NULL DEFAULT NULL COMMENT '创建人ID',
+  `is_deleted` int NULL DEFAULT NULL COMMENT '删除标志 0否,1是',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of tape_user
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for tape_user_authority
+-- ----------------------------
+DROP TABLE IF EXISTS `tape_user_authority`;
+CREATE TABLE `tape_user_authority`  (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '唯一ID',
+  `user_id` bigint NULL DEFAULT NULL COMMENT '用户ID',
+  `authority_id` int NULL DEFAULT NULL COMMENT '权限ID',
+  `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
+  `update_man` bigint NULL DEFAULT NULL COMMENT '更新人ID',
+  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `create_man` bigint NULL DEFAULT NULL COMMENT '创建人ID',
+  `is_deleted` int NULL DEFAULT NULL COMMENT '删除标志 0否,1是',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of tape_user_authority
+-- ----------------------------
 
 SET FOREIGN_KEY_CHECKS = 1;
