@@ -31,13 +31,13 @@ import java.util.*;
 @Slf4j
 public class ClipServiceImpl implements IClipService {
 
-    @Value("${tape.sourceFilePath}")
-    private String sourceFilePath;
+    @Value("${tape.video-source-file-path}")
+    private String videoSourceFilePath;
 
-    @Value("${tape.hlsPath}")
+    @Value("${tape.hls-path}")
     private String hlsPath;
 
-    @Value("${tape.coverPath}")
+    @Value("${tape.cover-path}")
     private String coverPath;
 
     @Autowired
@@ -49,19 +49,20 @@ public class ClipServiceImpl implements IClipService {
     RedisUtil redisUtil;
     @Autowired
     UserServiceImpl userService;
+
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public Integer createClip(Clip clip) {
         LocalCommandExecutor commandExecutor = new LocalCommandExecutorImpl();
-        String sourceFile = sourceFilePath + clip.getSourceFile();
+        String sourceFile = videoSourceFilePath + clip.getSourceFile();
         String cover = coverPath + clip.getCoverPath();
         String hls = hlsPath + clip.getClipPath();
         String sliceCommand = StrUtil.format("ffmpeg -i {} -vcodec copy -acodec copy -hls_list_size 0 -vbsf h264_mp4toannexb {}", sourceFile, hls);
         commandExecutor.executeCommand(sliceCommand, 50000);
-        if (StringUtils.isEmpty(clip.getCoverTime())){
+        if (StringUtils.isEmpty(clip.getCoverTime())) {
             clip.setCoverTime("00:00:01.000");
         }
-        String coverCommand = StrUtil.format("ffmpeg -i {} -ss {} -vframes 1 {}", sourceFile,clip.getCoverTime(), cover);
+        String coverCommand = StrUtil.format("ffmpeg -i {} -ss {} -vframes 1 {}", sourceFile, clip.getCoverTime(), cover);
         commandExecutor.executeCommand(coverCommand, 50000);
         return clipMapper.insert(clip);
     }
@@ -69,13 +70,13 @@ public class ClipServiceImpl implements IClipService {
     @Override
     public IPage<Clip> getClipPage(Page<Clip> page, Clip clip, User currentUser) {
         IPage<Clip> clipPage = clipMapper.selectClipPage(page, clip);
-        return fillClipPage(clipPage,currentUser);
+        return fillClipPage(clipPage, currentUser);
     }
 
     @Override
     public List<Clip> hotClip(User currentUser) {
         Set<String> idSet = redisUtil.zReverseRange(redisKey.clipHeat(), 0, 10);
-        Map<Long,Integer> orderMap = new HashMap<>();
+        Map<Long, Integer> orderMap = new HashMap<>();
         int order = 0;
         for (String s : idSet) {
             orderMap.put(Long.valueOf(s), order);
@@ -83,31 +84,31 @@ public class ClipServiceImpl implements IClipService {
         }
         List<Clip> clipList = clipMapper.selectBatchIds(orderMap.keySet());
         fillClipList(clipList, currentUser);
-        clipList.sort((o1, o2) -> orderMap.get(o1.getId())<orderMap.get(o2.getId())?-1:0);
+        clipList.sort((o1, o2) -> orderMap.get(o1.getId()) < orderMap.get(o2.getId()) ? -1 : 0);
         return clipList;
     }
 
     @Override
     public Integer countClip(Long userId) {
-        return clipMapper.selectCount(new QueryWrapper<Clip>().eq("creator",userId).eq("is_deleted",0));
+        return clipMapper.selectCount(new QueryWrapper<Clip>().eq("creator", userId).eq("is_deleted", 0));
     }
 
 
-    private IPage<Clip> fillClipPage(IPage<Clip> clipPage, User user){
+    private IPage<Clip> fillClipPage(IPage<Clip> clipPage, User user) {
         for (Clip clip : clipPage.getRecords()) {
             fillData(clip, user);
         }
         return clipPage;
     }
 
-    private Clip fillClip(Clip clip, User user){
+    private Clip fillClip(Clip clip, User user) {
         fillData(clip, user);
         return clip;
     }
 
-    private void fillClipList(List<Clip> clipList,User currentUser){
+    private void fillClipList(List<Clip> clipList, User currentUser) {
         for (Clip clip : clipList) {
-            fillData(clip,currentUser);
+            fillData(clip, currentUser);
         }
     }
 
@@ -128,10 +129,10 @@ public class ClipServiceImpl implements IClipService {
     @Override
     public Clip getClipById(Long id, User currentUser) {
         Clip clip = clipMapper.selectById(id);
-        if (clip==null){
+        if (clip == null) {
             return null;
         }
-        return fillClip(clip,currentUser);
+        return fillClip(clip, currentUser);
     }
 
     @Override

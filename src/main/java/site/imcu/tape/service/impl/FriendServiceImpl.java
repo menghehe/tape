@@ -19,7 +19,7 @@ import java.util.Date;
 * @date: 2020/3/27 13:17
 */
 @Service
-public class FriendServiceImpl implements IFriendService {
+public class  FriendServiceImpl implements IFriendService {
 
     @Autowired
     private FriendMapper friendMapper;

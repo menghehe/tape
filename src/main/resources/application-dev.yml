@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/tape
+    password: root
+    username: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: 127.0.0.1
+    database: 10
+
+
+j-push:
+  app-key:
+  master-secret:
+
+tape:
+  video-source-file-path: D:\tape\video
+  hls-path: D:\tape\hls
+  cover-path: D:\tape\cover
+  avatar-path: D:\tape\avatar

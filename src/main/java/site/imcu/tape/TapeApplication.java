@@ -13,10 +13,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 /**
  * @author menghe
  */
-@EnableTransactionManagement
 @EnableSwagger2Doc
 @SpringBootApplication
 @MapperScan("site.imcu.tape.mapper")
+@EnableTransactionManagement(proxyTargetClass =true)
 public class TapeApplication {
 
 	public static void main(String[] args) {

@@ -25,16 +25,16 @@ import org.springframework.util.StringUtils;
 @Slf4j
 @Component
 public class PushUtil implements InitializingBean {
-    @Value("${jPush.appKey}")
+    @Value("${j-push.app-key}")
     private String appKey;
-    @Value("${jPush.masterSecret}")
+    @Value("${j-push.master-secret}")
     private String masterSecret;
 
 
     private PushClient pushClient;
 
-    public void push(String message,String alias){
-        PushPayload pushPayload = pushAllNotify(message,alias);
+    public void push(String message, String alias) {
+        PushPayload pushPayload = pushAllNotify(message, alias);
         try {
             PushResult pushResult = pushClient.sendPush(pushPayload);
             log.info(JSONObject.toJSONString(pushResult));
@@ -47,7 +47,7 @@ public class PushUtil implements InitializingBean {
      * 全平台指定用户推送
      *
      * @param message 消息
-     * @param alias 对象
+     * @param alias   对象
      * @return 消息
      */
     public PushPayload pushAllNotify(String message, String... alias) {

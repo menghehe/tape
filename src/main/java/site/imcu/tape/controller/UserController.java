@@ -36,7 +36,7 @@ import java.io.IOException;
 @RequestMapping("/api/user/")
 public class UserController {
 
-    @Value("${tape.avatarPath}")
+    @Value("${tape.avatar-path}")
     private String avatarPath;
 
     @Autowired
